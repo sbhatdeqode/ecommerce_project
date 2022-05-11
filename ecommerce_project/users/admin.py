@@ -1,19 +1,42 @@
-from tabnanny import verbose
+from django import forms
 from django.contrib import admin
+from django.contrib.auth.models import Group
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.core.exceptions import ValidationError
 
-from django.contrib.auth.models import User
-from .models import Users 
-from django.contrib.auth.admin import UserAdmin
-
-class UsersInline(admin.StackedInline):
-    model = Users
-    can_delete=False
-    verbose_name_plural='Users'
-
-class CustomisedUserAdmin(UserAdmin):
-     inlines = [UsersInline]
-
-admin.site.unregister(User)
-admin.site.register(User,CustomisedUserAdmin)
+from .models import MyUser
 
 
+
+       
+
+
+
+class UserAdmin(BaseUserAdmin):
+    
+    
+
+   
+    list_display = ('email', 'user_type','is_admin')
+    list_filter = ('is_admin',)
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('user_type',)}),
+         ('Permissions', {'fields': ('is_admin',)}),
+       
+    )
+   
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'user_type', 'password1', 'password2'),
+        }),
+    )
+    search_fields = ('email',)
+    ordering = ('email',)
+    filter_horizontal = ()
+
+admin.site.register(MyUser, UserAdmin)
+
+admin.site.unregister(Group)
