@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
 
     'users',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -151,4 +152,14 @@ AUTH_USER_MODEL = 'users.MyUser'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ACCOUNT_EMAIL_REQUIRED=True
+
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+ACCOUNT_FORMS = {
+'signup': 'users.forms.CustomSignupForm',
+}
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 
