@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
+from datetime import datetime 
 
 class MyUserManager(BaseUserManager):
     def create_user(self, email,user_type, password=None):
@@ -35,6 +36,10 @@ class MyUser(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
+    username=models.CharField(max_length=20,default='')
+    dob=models.DateField(default=datetime.now().date())
+    gender=models.CharField(max_length=10,default='')
+    adress=models.TextField(default='')
    
     user_type=models.CharField(
                                max_length=10,
