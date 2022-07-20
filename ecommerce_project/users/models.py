@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
 from datetime import datetime 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email,user_type, password=None):
+    def create_user(self, email,user_type, password = None):
         
         if not email:
             raise ValueError('Users must have an email address')
@@ -36,14 +36,16 @@ class MyUser(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    username=models.CharField(max_length=20,default='')
-    dob=models.DateField(default=datetime.now().date())
-    gender=models.CharField(max_length=10,default='')
-    adress=models.TextField(default='')
+    username = models.CharField(max_length = 20,default = '')
+    dob = models.DateField(default = datetime.now().date(), blank = True)
+    gender = models.CharField(max_length = 10, default='')
+    adress = models.TextField(default='')
+    shop_name = models.CharField(max_length=100, blank = True, default='')
+    shop_type = models.CharField(max_length=100, blank = True, default='')
    
     user_type=models.CharField(
                                max_length=10,
-                               choices=[('Admin','Admin'),('Shopuser','Shopuser'),('Customer','Customer')]
+                               choices=[('1','Admin'),('2','Shopuser'),('3','Customer')]
                                )
 
     def __str__(self):
@@ -71,4 +73,4 @@ class MyUser(AbstractBaseUser):
    
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['user_type']
+  
