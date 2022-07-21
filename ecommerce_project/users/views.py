@@ -1,3 +1,4 @@
+"""
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
@@ -121,3 +122,24 @@ class SignupView(
 
 
 signup = SignupView.as_view()
+
+"""
+from django.core.mail import send_mail
+from django.conf import settings
+from allauth.account import views
+from allauth.account import app_settings
+
+from allauth.account.forms import SignupForm
+
+
+from .forms import CustomSignupForm
+
+class ShopUserSignupView(views.SignupView):
+    template_name = "account/shop_user_signup." + app_settings.TEMPLATE_EXTENSION
+
+    def form_valid(self, form):
+        print("sending mail")
+        send_mail('A Shop User Registered', 'Please Go to the website and approve/reject the request', settings.EMAIL_HOST_USER, [settings.RECIPIENT_ADDRESS])
+        return super(ShopUserSignupView, self).form_valid(form)
+
+signup = ShopUserSignupView.as_view()

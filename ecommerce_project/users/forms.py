@@ -1,5 +1,7 @@
 from allauth.account.forms import SignupForm
 from django import forms
+from django.core.mail import send_mail
+from django.conf import settings
 
 USER_TYPE_CHOICES =(
     ("1", "Admin"),
@@ -50,5 +52,11 @@ class CustomSignupForm(SignupForm):
         user.user_type = self.cleaned_data['user_type']
         user.shop_type = self.cleaned_data['shop_type']
         user.shop_name = self.cleaned_data['shop_name']
+        
+        if self.cleaned_data['shop_name'] != 'NA':
+           user.is_active = False
+        
+        #send_mail('A Shop User Registered', 'Please Go to the website and approve/reject the request', settings.EMAIL_HOST_USER, [settings.RECIPIENT_ADDRESS])
+        
         user.save()
         return user
