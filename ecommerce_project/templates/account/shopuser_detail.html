@@ -1,0 +1,84 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% load crispy_forms_filters %}
+
+{% block head_title %}{% trans "SHOP USER DETAIL" %}{% endblock %}
+
+{% block content %}
+
+<br><br>
+<h2>{% trans "APPROVE OR REJECT SHOP USER'S REQUEST " %}</h2>
+<br><br>
+
+{% if request.user.is_admin %}
+
+
+<form class="signup"  method="post" action="{% url 'shopuser_aproval' %}">
+
+    {% csrf_token %}
+  <input type="hidden" name="user_id" value= {{shopuser.id}} />
+
+    <div class="form-row align-items-center">
+      
+      <ul>
+
+
+          <div class="col-md-6">
+            <li>SHOP USER EMAIL : {{ shopuser.email}}</li>
+          </div><br>
+
+          <div class="col-md-6">
+            <li>SHOP USER USERNAME : {{ shopuser.username }}</li>
+          </div><br>
+
+          <div class="col-md-6">
+            <li>SHOP USER ADRESS : {{ shopuser.adress }}</li>
+          </div><br>
+
+          <div class="col-md-6">
+            <li>SHOP NAME : {{ shopuser.shop_name }}</li>
+          </div><br>
+
+          <div class="col-md-6">
+            <li>SHOP TYPE : {{ shopuser.shop_type }}</li>
+          </div><br>
+        
+
+      </ul>
+    
+      <div class="col-md-6">
+        <label for="reason">Please mention the reason for your action.</label><br>
+        <textarea id="reason" name="reason" rows="3" cols="33">
+      
+        </textarea>
+
+      </div><br>
+   
+      <div class="col-md-6">
+
+        <select  name="result">
+          <option value="approve"> APPROVE</option>
+          <option value="reject"> REJECT</option>
+        </select>
+   
+      </div><br>
+
+    <button type="submit">{% trans "submit" %} &raquo;</button>
+
+    </div>
+
+  </form>
+
+
+
+
+
+
+
+{% else %}
+<p> You are not authorized to see this page. Please login as admin.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,145 +1,69 @@
-"""
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.sites.shortcuts import get_current_site
-from django.http import (
-    Http404,
-    HttpResponsePermanentRedirect,
-    HttpResponseRedirect,
-)
-from django.shortcuts import redirect
-from django.urls import reverse, reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic.base import TemplateResponseMixin, TemplateView, View
-from django.views.generic.edit import FormView
 
-from allauth import ratelimit
-from allauth.decorators import rate_limit
-from allauth.exceptions import ImmediateHttpResponse
-from allauth.utils import get_form_class, get_request_param
-
-from allauth.account import app_settings, signals
-from allauth.account.adapter import get_adapter
-from allauth.account.forms import (
-    AddEmailForm,
-    ChangePasswordForm,
-    LoginForm,
-    ResetPasswordForm,
-    ResetPasswordKeyForm,
-    SetPasswordForm,
-    SignupForm,
-    UserTokenForm,
-)
-from allauth.account.models import EmailAddress, EmailConfirmation, EmailConfirmationHMAC
-from allauth.account.utils import (
-    complete_signup,
-    get_login_redirect_url,
-    get_next_redirect_url,
-    logout_on_password_change,
-    passthrough_next_redirect_url,
-    perform_login,
-    send_email_confirmation,
-    sync_user_email_addresses,
-    url_str_to_user_pk,
-)
-
-from allauth.account.views import RedirectAuthenticatedUserMixin, CloseableSignupMixin, AjaxCapableProcessFormViewMixin
-
-INTERNAL_RESET_SESSION_KEY = "_password_reset_key"
-
-
-sensitive_post_parameters_m = method_decorator(
-    sensitive_post_parameters("oldpassword", "password", "password1", "password2")
-)
-
-@method_decorator(rate_limit(action="signup"), name="dispatch")
-class SignupView(
-    RedirectAuthenticatedUserMixin,
-    CloseableSignupMixin,
-    AjaxCapableProcessFormViewMixin,
-    FormView,
-):
-    template_name = "account/shop_user_signup." + app_settings.TEMPLATE_EXTENSION
-    form_class = SignupForm
-    redirect_field_name = "next"
-    success_url = None
-
-    @sensitive_post_parameters_m
-    def dispatch(self, request, *args, **kwargs):
-        return super(SignupView, self).dispatch(request, *args, **kwargs)
-
-    def get_form_class(self):
-        return get_form_class(app_settings.FORMS, "signup", self.form_class)
-
-    def get_success_url(self):
-        # Explicitly passed ?next= URL takes precedence
-        ret = (
-            get_next_redirect_url(self.request, self.redirect_field_name)
-            or self.success_url
-        )
-        return ret
-
-    def form_valid(self, form):
-        # By assigning the User to a property on the view, we allow subclasses
-        # of SignupView to access the newly created User instance
-        self.user = form.save(self.request)
-        try:
-            return complete_signup(
-                self.request,
-                self.user,
-                app_settings.EMAIL_VERIFICATION,
-                self.get_success_url(),
-            )
-        except ImmediateHttpResponse as e:
-            return e.response
-
-    def get_context_data(self, **kwargs):
-        ret = super(SignupView, self).get_context_data(**kwargs)
-        form = ret["form"]
-        email = self.request.session.get("account_verified_email")
-        if email:
-            email_keys = ["email"]
-            if app_settings.SIGNUP_EMAIL_ENTER_TWICE:
-                email_keys.append("email2")
-            for email_key in email_keys:
-                form.fields[email_key].initial = email
-        login_url = passthrough_next_redirect_url(
-            self.request, reverse("account_login"), self.redirect_field_name
-        )
-        redirect_field_name = self.redirect_field_name
-        site = get_current_site(self.request)
-        redirect_field_value = get_request_param(self.request, redirect_field_name)
-        ret.update(
-            {
-                "login_url": login_url,
-                "redirect_field_name": redirect_field_name,
-                "redirect_field_value": redirect_field_value,
-                "site": site,
-            }
-        )
-        return ret
-
-
-signup = SignupView.as_view()
-
-"""
-from django.core.mail import send_mail
-from django.conf import settings
+from multiprocessing import context
 from allauth.account import views
 from allauth.account import app_settings
+from django.shortcuts import render
+from django.views import View
 
-from allauth.account.forms import SignupForm
+from django.views.generic.list import ListView
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 
-
-from .forms import CustomSignupForm
 
 class ShopUserSignupView(views.SignupView):
     template_name = "account/shop_user_signup." + app_settings.TEMPLATE_EXTENSION
 
-    def form_valid(self, form):
-        print("sending mail")
-        send_mail('A Shop User Registered', 'Please Go to the website and approve/reject the request', settings.EMAIL_HOST_USER, [settings.RECIPIENT_ADDRESS])
-        return super(ShopUserSignupView, self).form_valid(form)
-
 signup = ShopUserSignupView.as_view()
+
+class ShopUserListView(ListView):
+    model = get_user_model()
+    template_name = "account/shopuser_list." + app_settings.TEMPLATE_EXTENSION
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.filter(~Q(shop_name = "NA"))
+        qs = qs.filter(Q(is_active = False))
+        return qs
+
+shopuser_list = ShopUserListView.as_view()
+
+
+class shopuser_details(View):
+
+    template_name_details = "account/shopuser_detail." + app_settings.TEMPLATE_EXTENSION
+    template_name_approval = "account/shopuser_approval." + app_settings.TEMPLATE_EXTENSION
+
+    def get(self, request, *args, **kwargs):
+
+        user_model = get_user_model()
+        context = {}
+        user_id = kwargs["user_id"]
+        context["shopuser"] = user_model.objects.get(id = user_id)
+        return render(request, self.template_name_details, context)
+
+    def post(self, request):
+        context = {}
+
+        user_model = get_user_model()
+       
+        user_id = request.POST.get('user_id')
+        
+        user =  user_model.objects.get(id = user_id)
+
+        context["shopuser"] = user
+     
+        if request.POST.get('result') == 'approve':
+            user.is_active = True
+            user.save()
+            context["result"] = "APPROVED"
+            #send_mail('You shop got approved', 'Your shop regestration request is approved by the Admin', settings.EMAIL_HOST_USER, user.email)
+
+        else :
+            
+            context["result"] = "REJECTED"
+            #send_mail('You shop got rejected', 'Your shop regestration request is requested by the Admin', settings.EMAIL_HOST_USER, user.email)
+        
+        print(request.POST.get('reason'))
+        return render(request, self.template_name_approval, context)
+
+           
