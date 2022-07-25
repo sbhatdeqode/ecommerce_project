@@ -60,3 +60,9 @@ class CustomSignupForm(SignupForm):
         
         user.save()
         return user
+
+
+class ModalForm(forms.Form):
+    
+    shop_type = forms.CharField(label="shop_type", max_length=30)
+    shop_name = forms.CharField(label="shop_name", max_length=30)
