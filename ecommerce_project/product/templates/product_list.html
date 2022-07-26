@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% load crispy_forms_filters %}
+
+{% block head_title %}{% trans "PRODUCT LIST" %}{% endblock %}
+
+{% block content %}
+<br><br>
+<h1>{% trans "PRODUCT LIST" %}</h1>
+<br><br>
+
+{% if request.user.get_user_type_display == 'Customer' %}
+<div class="form-row align-items-center">
+<ul>
+    <!-- Iterate over object_list -->
+    {% for object in object_list %}
+    <!-- Display Objects -->
+    <div class="col-md-6">
+        <li>NAME : {{ object.name}}</li>
+      </div><br>
+
+      <div class="col-md-6">
+        <li>CATEGORY       : {{ object.category.name }}</li>
+      </div><br>
+
+      <div class="col-md-6">
+        <li>BRAND       : {{ object.brand }}</li>
+      </div><br>
+    
+    <br>
+    <hr/>
+    <!-- If object_list is empty  -->
+    {% empty %}
+    <li>No objects yet.</li>
+    {% endfor %}
+</ul>
+
+</div>
+{% else %}
+<p> You are not authorized to see this page. Please login as customer.</p>
+{% endif %}
+
+{% endblock %}

@@ -11,5 +11,6 @@ urlpatterns = [
     path('shopuser_crud/', views.shopuser_crud, name = 'shopuser_crud'),
     path('shopuser_crud/<int:pk>/update', views.update_shopuser, name='update_shopuser'),
     path('shopuser_delete/<int:pk>/delete', views.delete_shopuser, name='delete_shopuser'),
+    path('shopuser_add/', views.shopuser_add, name='add_shopuser')
 
 ]

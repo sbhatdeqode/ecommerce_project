@@ -125,7 +125,7 @@ class ShopuserCrud(View):
         user_model = get_user_model()
         context = {}
        
-        context["object_list"] = user_model.objects.filter(~Q(shop_name = "NA"))
+        context["object_list"] = user_model.objects.filter(~Q(shop_name = "NA"), is_active = True)
         context['form'] = ModalForm()
         return render(request, self.template_name, context)
 
@@ -146,7 +146,7 @@ def update_shopuser(request, pk):
                 status=204,
                 headers={
                     'HX-Trigger': json.dumps({
-                        "movieListChanged": None,
+                       
                         "showMessage": f"{shop_user.email} updated."
                     })
                 }
@@ -171,7 +171,7 @@ def delete_shopuser(request, pk):
             status=204,
             headers={
                 'HX-Trigger': json.dumps({
-                    "movieListChanged": None,
+                   
                     "showMessage":  "shop user deleted."
                 })
             })
@@ -181,4 +181,22 @@ def delete_shopuser(request, pk):
     return render(request, template_name, {
         'form': form,
         'shop_user': shop_user,
+    })
+
+def shopuser_add(request):
+
+    from .forms import ShopuserAddForm
+
+    template_name =  "account/shopuser_add." + app_settings.TEMPLATE_EXTENSION
+    template_name_success =  "account/shopuser_add_success." + app_settings.TEMPLATE_EXTENSION
+
+    if request.method == "POST":
+        form = ShopuserAddForm(request.POST)
+        if form.is_valid():
+            shopuser = form.save()
+            return render(request, template_name_success)
+    else:
+        form = ShopuserAddForm()
+    return render(request, template_name, {
+        'form': form,
     })

@@ -2,6 +2,8 @@ from allauth.account.forms import SignupForm
 from django import forms
 from django.core.mail import send_mail
 from django.conf import settings
+from django import forms
+from django.contrib.auth import get_user_model
 
 USER_TYPE_CHOICES =(
     ("1", "Admin"),
@@ -66,3 +68,14 @@ class ModalForm(forms.Form):
     
     shop_type = forms.CharField(label="shop_type", max_length=30)
     shop_name = forms.CharField(label="shop_name", max_length=30)
+
+
+
+
+
+
+class ShopuserAddForm(forms.ModelForm):
+
+    class Meta:
+        model = get_user_model()
+        fields = ['email', 'username', 'dob', 'user_type', 'adress', 'gender', 'shop_name', 'shop_type',]

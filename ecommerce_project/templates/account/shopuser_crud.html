@@ -4,8 +4,10 @@
 {% load  widget_tweaks %}
 {% block content %}
 {% if request.user.is_admin %}
-<br><br>
-<table class="table" id = "myTable">
+<br>
+<p>Do you want to add shop user?   <a href="{% url 'add_shopuser' %}"><button class="btn btn-danger btn-sm">ADD</button></a></p>
+<br>
+<table class="table" id = "myTable"><h3>SHOP USERS LIST :</h3>
     <thead>
       <tr>
         <th scope="col">#</th>
