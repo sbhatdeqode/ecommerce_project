@@ -89,6 +89,9 @@ TEMPLATES = [
 
                  # `allauth` needs this from django
                 'django.template.context_processors.request',
+
+                # for filters
+                'product.template_context.get_filters',
             ],
         },
     },
@@ -159,6 +162,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'users.MyUser'
+
+# media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

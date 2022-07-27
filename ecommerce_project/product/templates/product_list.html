@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "basex.html" %}
 
 {% load i18n %}
 
@@ -7,6 +7,7 @@
 {% block head_title %}{% trans "PRODUCT LIST" %}{% endblock %}
 
 {% block content %}
+<main class="container my-4">
 <br><br>
 <h1>{% trans "PRODUCT LIST" %}</h1>
 <br><br>
@@ -42,4 +43,5 @@
 <p> You are not authorized to see this page. Please login as customer.</p>
 {% endif %}
 
+</main>
 {% endblock %}
