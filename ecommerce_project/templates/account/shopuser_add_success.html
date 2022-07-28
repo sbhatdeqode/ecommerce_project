@@ -1,0 +1,23 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% load crispy_forms_filters %}
+
+{% block head_title %}{% trans "ADD SHOP USER SUCCESS" %}{% endblock %}
+
+{% block content %}
+
+{% if request.user.is_admin %}
+<br>
+<br>
+<h5>SHOP USER ADDED SUCCESSFULLY</h5>
+
+<p>To return to shop user list <a href="{url 'shopuser_crud'}">CLICK</a>here.</p>
+
+{% else %}
+    <p> You are not authorized to see this page. Please login as admin.</p>
+{% endif %}
+
+
+{% endblock %}

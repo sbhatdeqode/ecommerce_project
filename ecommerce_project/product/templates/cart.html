@@ -1,0 +1,58 @@
+{% extends 'basex.html' %}
+{% load static %}
+{% block content %}
+
+<main class="container my-4">
+    {% if request.user.get_user_type_display == 'Admin' %}
+	
+    <div class="row">
+		<div class="col-md-9">
+			<!-- Products -->
+			<h3 class="mb-4 border-bottom pb-1">
+			Cart
+			</h3>
+			<div class="row" id="filteredProducts">
+				<p class="ajaxLoader">Loading...</p>
+				{% for c in cart_products %}
+				<div class="col-lg-4 col-md-6 mb-4 product-box">
+					<div class="card shadow">
+					  <a href=""><img src="/media/{{c.product.productattribute_set.first.image}}" class="card-img-top" alt="{{c.product.title}}"></a>
+					  <div class="card-body">
+					    <h5 class="card-text"><a href="">{{c.product.title}}</a></h5>
+					    <h6>$ <span class="product-price-{{c.product.id}}">{{c.product.productattribute_set.first.price}}</span></h6>
+					  </div>
+					  	<div class="card-footer">
+			
+				
+				          <input type="hidden" class="product-id-{{c.product.id}}" value="{{c.product.id}}" />
+				
+							  	
+							  	<button class="btn btn-sm btn-danger remove-from-cart">REMOVE</button>
+							  	<span class="float-right">
+							  		{{c.product.productattribute_set.first.get_rating_display}}/5
+							  		<i class="fa fa-star text-warning"></i>
+							  	</span>
+					  	</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+
+		</div>
+	</div>
+
+	
+    	
+    <div class="toast-body bg-success text-light position-fixed top- end-p-3"style="z-index:11;border-radius:4px;">Message sent successfully</div>
+    	
+	
+
+    {% else %}
+    <p> You are not authorized to see this page. Please login as customer.</p>
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{% static 'cart_load.js' %}"></script>
+{% endblock js %}
