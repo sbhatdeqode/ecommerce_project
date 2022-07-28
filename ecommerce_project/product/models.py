@@ -76,7 +76,7 @@ class Product(models.Model):
     title = models.CharField(max_length=200)
     shopuser = models.ForeignKey(user_model, on_delete = models.CASCADE)
     category = models.ForeignKey(Category, on_delete = models.CASCADE)
-    brand=models.ForeignKey(Brand,on_delete = models.CASCADE)
+    brand = models.ForeignKey(Brand,on_delete = models.CASCADE)
     published = models.BooleanField(default = False)
     detail = models.TextField()
 
@@ -105,3 +105,16 @@ class ProductAttribute(models.Model):
 
     def image_tag(self):
         return mark_safe('<img src="%s" width="40" height="40" />' % (self.image.url))
+
+
+# Cart
+class Cart(models.Model):
+
+    user = get_user_model()
+
+    customer = models.ForeignKey(user, on_delete = models.CASCADE)
+    product = models.ForeignKey(Product,on_delete=models.CASCADE)
+
+
+    class Meta:
+        verbose_name_plural='7. Carts'

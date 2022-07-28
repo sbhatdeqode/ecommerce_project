@@ -22,7 +22,8 @@
 					{% for color in colors %}
 					<li class="list-group-item">
 						<input class="filter-checkbox" data-filter="color" value="{{color.color__id}}" type="checkbox" />&nbsp;
-						<button class="btn" style="background-color: '{{color.color__color_code}}'; margin-top: -5px;"></button>
+						<button class="btn" style="background-color: '{{color.color__code}}'; margin-top: -5px;"></button>
+						{{color.color__title}}
 					</li>
 					{% endfor %}
 				</div>
