@@ -1,0 +1,49 @@
+{% extends 'account/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load  widget_tweaks %}
+
+{% block content %}
+
+{% if request.user.is_authenticated and request.user.get_user_type_display == "Shopuser" %}
+
+<table class="table" id = "myTable"><h3>SHOP USERS LIST :</h3>
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Shopuser Email</th>
+        <th scope="col">Shop Type</th>
+        <th scope="col">Shop Name</th>
+        <th scope="col">Update</th>
+        <th scope="col"> Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for object in object_list %}
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td class ="mail">{{ object.email}}</td>
+        <td>{{ object.shop_type}}</td>
+        <td>{{ object.shop_name}}</td><br>
+        <td><button class="btn btn-primary btn-sm" hx-get="{% url 'update_shopuser' pk=object.id %}" hx-target="#dialog">UPDATE</button></td>
+        <td><button class="btn btn-danger btn-sm" hx-get="{% url 'delete_shopuser' pk=object.id %}" hx-target="#dialog">DELETE</button></td>
+        
+        
+      </tr>
+      {% endfor %}
+      
+    </tbody>
+  </table>
+
+  {% else %}
+    <p> You are not authorized to see this page. Please login as shopuser.</p>
+  {% endif %}
+
+{% endblock content %}
+ 
+{% block js %} 
+ 
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+ 
+{% endblock js %}

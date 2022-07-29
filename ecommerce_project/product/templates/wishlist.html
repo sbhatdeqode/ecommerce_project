@@ -1,0 +1,49 @@
+{% extends 'basex.html' %}
+{% load static %}
+{% block content %}
+<main class="container my-4" id="wishList">
+	<!-- Featured Products -->
+	<h3 class="my-4 border-bottom pb-1">WISHLIST (Total Items : {{wishlist_products|length}})</h3>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Price</th>
+				<th>Remove</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for c in wishlist_products %}
+			<tr>
+				<td>
+					<img src="/media/{{c.product.productattribute_set.first.image}}" width="50" />
+					<p>{{c.product.title}}</p>
+				</td>
+				<td>
+		            Rs. {{c.product.productattribute_set.first.price}}
+					
+				</td>
+				<td>
+        
+					<button class="btn btn-sm btn-danger wishlist-delete-item" data-item="{{c.product.id}}"><i class="fa fa-trash"></i></button>
+                </td>
+				
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+</main>
+{% endblock %}
+
+{% block extra_body %}
+   <!-- Empty toast to show the message -->
+	<div class="toast-container position-fixed top-0 end-0 p-3">
+		<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="d-flex">
+			<div id="toast-body" class="toast-body"></div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		</div>
+	</div>
+{% endblock %}
