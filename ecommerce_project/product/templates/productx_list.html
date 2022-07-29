@@ -31,7 +31,7 @@
 				          <input type="hidden" class="product-id-{{product.id}}" value="{{product.id}}" />
 				
 							  	<button class="btn btn-sm btn-primary add-to-cart" data-index="{{product.id}}"><i class="fa fa-shopping-cart"></i></button>
-							  	<button class="btn btn-sm btn-danger"><i class="fa fa-heart"></i></button>
+							  	<button class="btn btn-sm btn-danger add-to-wishlist" data-index="{{product.id}}"><i class="fa fa-heart"></i></button>
 							  	<span class="float-right">
 							  		{{product.productattribute_set.first.get_rating_display}}/5
 							  		<i class="fa fa-star text-warning"></i>
@@ -42,14 +42,20 @@
 				{% endfor %}
 			</div>
 			<p class="my-4 text-center"><button id="loadMore" data-total="{{total_data}}" data-limit="3" class="btn btn-dark btn-sm">Load More <i class="fa fa-sync load-more-icon"></i></button></p>
+			
+			<!-- Empty toast to show the message -->
+				<div class="toast-container position-fixed top-0 end-0 p-3">
+					<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+					<div class="d-flex">
+						<div id="toast-body" class="toast-body"></div>
+						<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+					</div>
+				</div>
 		</div>
 	</div>
-
-	
-    	{% if messages %}
-    <div class="toast-body bg-success text-light position-fixed top- end-p-3"style="z-index:11;border-radius:4px;">Message sent successfully</div>
-    	{% endif %}
-	
+    
+    		
 
     {% else %}
     <p> You are not authorized to see this page. Please login as customer.</p>
@@ -57,6 +63,6 @@
 </main>
 {% endblock %}
 
-{% block js %}
-<script type="text/javascript" src="{% static 'cart_load.js' %}"></script>
-{% endblock js %}
+{% block extra_body %}
+
+{% endblock %}
