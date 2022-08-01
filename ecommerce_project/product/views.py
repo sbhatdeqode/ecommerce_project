@@ -108,13 +108,23 @@ def cart_add(request):
 	customer = request.user
 	product = Product.objects.get(id = product_id)
 
+	if Cart.objects.filter(product__id = product_id).exists():
+
+		message = "Item already exists in the cart"
+
+		carts = Cart.objects.filter(customer = customer)
+
+		return JsonResponse({'totalitems':len(carts), 'message':message})
+
+
+
 	cart = Cart(customer = customer, product = product )
 	cart.save()
 
 	carts = Cart.objects.filter(customer = customer)
+	message = "Item added to cart"
 
-	return JsonResponse({'totalitems':len(carts)})
-
+	return JsonResponse({'totalitems':len(carts), 'message':message})
 
 # cart list
 def cart_list(request):
@@ -223,3 +233,99 @@ def wishlist_delete(request):
 
 	t = render_to_string('ajax/wishlist.html',{'wishlist_products':wishlist_products})
 	return JsonResponse({'data':t, 'totalitems':len(wishlist_products), 'message': "Item successfully deleted" })
+
+
+# place order
+def place_order(request):
+
+	"""
+		place order view
+	"""
+
+	customer = request.user
+
+	cart = Cart.objects.filter(customer = customer)
+
+	order = Order(customer = customer)
+	order.save()
+
+	total_amount = 0
+
+	for c in cart:
+        
+		pa = ProductAttribute.objects.get(product = c.product)
+		total_amount += pa.price
+		order.products.add(c.product)
+		c.delete()
+
+	order.total_amount = total_amount
+	order.save()
+
+	return render(request, 'order.html', {'order':order, 'total_amount':total_amount})
+
+
+# Buy Now
+def buy_now(request):
+
+	"""
+		place order view
+	"""
+
+	customer = request.user
+
+	p_id = request.GET['pid']
+
+	product = Product.objects.get(id = p_id)
+
+	total_amount = 0
+
+
+	if Cart.objects.filter(product__id = p_id).exists():
+
+		cart = Cart.objects.filter(product__id = p_id)
+		cart.delete()
+
+	order = Order(customer = customer)
+	order.save()
+
+	pa = ProductAttribute.objects.get(product = product)
+	total_amount += pa.price
+	order.products.add(product)
+	order.total_amount = total_amount
+	order.save()
+
+	return render(request, 'order.html',{'order':order, 'total_amount':total_amount})
+
+
+# order list
+def order_list(request):
+
+	"""
+		place order view
+	"""
+	customer = request.user
+
+	orders = Order.objects.filter(customer = customer)
+
+	return render(request, 'order_list.html', {'orders':orders,})
+
+
+# cancel order
+def order_cancel(request):
+
+	"""
+		cancel order view
+	"""
+
+	order_id = request.GET['order_id']
+
+	order = Order.objects.get(id = str(order_id) )
+
+	order.delete()
+
+
+	customer = request.user
+
+	orders = Order.objects.filter(customer = customer)
+
+	return render(request, 'order_list.html', {'orders':orders,})

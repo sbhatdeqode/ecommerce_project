@@ -55,7 +55,7 @@ $(document).ready(function(){
 			success:function(res){
 				$(".cart-list").text(res.totalitems);
 				_vm.attr('disabled',false);
-				toastBody.innerText = "Item added to cart"
+				toastBody.innerText = res.message
             	toast.show()
 			}
 		});

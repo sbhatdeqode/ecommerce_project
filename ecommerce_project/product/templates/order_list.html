@@ -1,0 +1,77 @@
+{% extends 'basex.html' %}
+{% load static %}
+{% block content %}
+<main class="container my-4" id="cartList">
+	<h3 class="my-4 border-bottom pb-1">Your order list (Total orders: {{orders|length}})</h3>
+    
+    {% for order in orders %}
+
+        {% if not order.cancelled %}
+        
+    
+    
+	<br><br>
+    <span class="float-left">
+        
+        <h4> Order Id :{{order.id}}</h4>
+        
+    </span>
+    <span class="float-right">
+        
+        <a href="{% url 'order_cancel' %}?order_id={{order.id}}"><button class="btn btn-sm btn-danger" >Cancel</button> </a>
+        
+    </span>
+    <br>
+    <table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Price</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for product in order.products.all %}
+			<tr>
+
+				<td>
+					<img src="/media/{{product.productattribute_set.first.image}}" width="50" />
+					<p>{{product.title}}</p>
+				</td>
+				<td>
+		            Rs. {{product.productattribute_set.first.price}}	
+				</td>
+	
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table><br>
+   
+    <span class="float-middle">
+        
+        <h4> Total amount : Rs. {{order.total_amount}}</h4>
+        <h4> Payment Status : Paid</h4>
+        
+    </span>
+    
+    
+   
+    <hr>
+    <br>
+
+    {% endif %}
+    {% endfor %}
+
+</main>
+{% endblock %}
+
+{% block extra_body %}
+   <!-- Empty toast to show the message -->
+	<div class="toast-container position-fixed top-0 end-0 p-3">
+		<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="d-flex">
+			<div id="toast-body" class="toast-body"></div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		</div>
+	</div>
+{% endblock %}

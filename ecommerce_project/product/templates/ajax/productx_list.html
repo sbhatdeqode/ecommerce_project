@@ -12,6 +12,7 @@
 				
 		<button class="btn btn-sm btn-primary add-to-cart" data-index="{{product.id}}"><i class="fa fa-shopping-cart"></i></button>
 		<button class="btn btn-sm btn-danger add-to-wishlist" data-index="{{product.id}}"><i class="fa fa-heart"></i></button>
+		<a href="{% url 'buy_now' %}?pid={{product.id}}"><button class="btn btn-sm btn-primary" >Buy Now</button> </a>
 		<span class="float-right">
 			{{product.productattribute_set.first.get_rating_display}}/5
 			<i class="fa fa-star text-warning"></i>

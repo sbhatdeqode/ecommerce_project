@@ -161,3 +161,21 @@ class Wishlist(models.Model):
 
     class Meta:
         verbose_name_plural = '8. Wishlists'
+
+# Order
+class Order(models.Model):
+
+    """
+        order Model
+    """
+
+    user = get_user_model()
+
+    customer = models.ForeignKey(user, on_delete = models.CASCADE)
+    products = models.ManyToManyField(Product)
+    paid = models.BooleanField(default = True)
+    cancelled =  models.BooleanField(default = False)
+    total_amount = models.BigIntegerField(default=0)
+
+    class Meta:
+        verbose_name_plural = '9. Orders'

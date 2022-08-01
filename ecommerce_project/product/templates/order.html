@@ -1,0 +1,49 @@
+{% extends 'basex.html' %}
+{% load static %}
+{% block content %}
+<main class="container my-4" id="cartList">
+	<h3 class="my-4 border-bottom pb-1">Order placed successfully. (order id : {{order.id}})</h3>
+	<br><br><table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Price</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for product in order.products.all %}
+			<tr>
+
+				<td>
+					<img src="/media/{{product.productattribute_set.first.image}}" width="50" />
+					<p>{{product.title}}</p>
+				</td>
+				<td>
+		            Rs. {{product.productattribute_set.first.price}}	
+				</td>
+	
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table><br>
+    <span class="float-middle">
+        
+        <h4> Total amount : Rs. {{total_amount}}</h4>
+        <h4> Payment Status : Paid</h4>
+        
+    </span>
+	<a href="{% url 'order_list' %}"> orderlist</a>
+</main>
+{% endblock %}
+
+{% block extra_body %}
+   <!-- Empty toast to show the message -->
+	<div class="toast-container position-fixed top-0 end-0 p-3">
+		<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="d-flex">
+			<div id="toast-body" class="toast-body"></div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		</div>
+	</div>
+{% endblock %}
