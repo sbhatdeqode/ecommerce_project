@@ -1,0 +1,20 @@
+{% extends 'shopuser_base.html' %}
+{% block content %}
+<main class="container my-4">
+	<!-- Featured Products -->
+	<h3 class="my-4 border-bottom pb-1">Add Product</h3>
+	<table class="table table-bordered">
+		<form method="post">
+			{% csrf_token %}
+            <input type="hidden" name="shopuser" value="{{ request.user}}">
+			{{form_pro.as_table}}
+            {{form_at.as_table}}
+			<tr>
+				<td colspan="2">
+					<input type="submit" value="Register" class="btn btn-primary" />
+				</td>
+			</tr>
+		</form>
+	</table>
+</main>
+{% endblock %}

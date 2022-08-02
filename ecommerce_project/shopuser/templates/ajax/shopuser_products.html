@@ -1,0 +1,40 @@
+
+			<div class="row" id="filteredProducts">
+			
+				{% for product in shopuser_products %}
+				<div class="col-lg-4 col-md-6 mb-4 product-box">
+					<div class="card shadow">
+					  <a href=""><img src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{product.title}}"></a>
+					  <div class="card-body">
+					    <h5 class="card-text"><a href="">{{product.title}}</a></h5>
+					    <h6>Rs. <span class="product-price-{{product.id}}">{{product.productattribute_set.first.price}}</span></h6>
+					  </div>
+					  	<div class="card-footer">
+			
+				
+				          <input type="hidden" class="product-id-{{product.id}}" value="{{product.id}}" />
+				
+						  <a href="{% url 'product_update' %}?p_id={{product.id}}"> <button class="btn btn-sm btn-primary update-product" data-index="{{product.id}}">Update</button> </a>
+							  	<button class="btn btn-sm btn-danger delete-product" data-index="{{product.id}}">Delete</i></button>
+                  {% if product.published %}
+
+                  <button class="btn btn-sm btn-primary publish-unpublish-product" data-index="{{product.id}}" >Unpublish</button> 
+
+                  {% else %}
+
+                  <button class="btn btn-sm btn-primary publish-unpublish-product" data-index="{{product.id}}">Publish</button>     
+
+                  {% endif %}
+								 
+							  	<span class="float-right">
+							  		{{product.productattribute_set.first.get_rating_display}}/5
+							  		<i class="fa fa-star text-warning"></i>
+							  	</span>
+					  	</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+			
+		
+    

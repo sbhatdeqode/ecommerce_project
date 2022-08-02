@@ -255,6 +255,7 @@ def place_order(request):
         
 		pa = ProductAttribute.objects.get(product = c.product)
 		total_amount += pa.price
+		c.product.sold = True
 		order.products.add(c.product)
 		c.delete()
 
@@ -290,6 +291,7 @@ def buy_now(request):
 
 	pa = ProductAttribute.objects.get(product = product)
 	total_amount += pa.price
+	product.sold = True
 	order.products.add(product)
 	order.total_amount = total_amount
 	order.save()
@@ -329,3 +331,5 @@ def order_cancel(request):
 	orders = Order.objects.filter(customer = customer)
 
 	return render(request, 'order_list.html', {'orders':orders,})
+
+

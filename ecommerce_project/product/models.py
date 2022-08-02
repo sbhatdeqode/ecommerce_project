@@ -98,6 +98,7 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand,on_delete = models.CASCADE)
     published = models.BooleanField(default = False)
     detail = models.TextField()
+    sold = models.BooleanField(default = False)
 
     class Meta:
         verbose_name_plural = '5. Products'

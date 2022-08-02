@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'widget_tweaks',
     'product',
+    'shopuser',
    
     # allauth
     'django.contrib.sites',
@@ -78,7 +79,7 @@ ROOT_URLCONF = 'ecommerce_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'templates', 'accounts'), os.path.join(BASE_DIR, 'product', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'templates', 'accounts'), os.path.join(BASE_DIR, 'product', 'templates'), os.path.join(BASE_DIR, 'shopuser', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
