@@ -1,14 +1,15 @@
-{% extends "account/base.html" %}
+{% extends "account/basex.html" %}
 
 {% load i18n %}
 
 {% block head_title %}{% trans "Account Inactive" %}{% endblock %}
 
 {% block content %}
+<main class="container my-4"><br>
 <h1>{% trans "Account Inactive" %}</h1>
 
 <p>{% trans "This account is inactive." %}</p>
 
-<p>{{ user.get_username }} account will be activated by the admin.</p>
-    
+<p><b>{{ user.get_username }} account will be activated by the admin.</b></p>
+</main>
 {% endblock %}

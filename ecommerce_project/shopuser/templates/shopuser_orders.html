@@ -2,7 +2,13 @@
 {% load static %}
 {% block content %}
 <main class="container my-4" id="cartList">
-	<h3 class="my-4 border-bottom pb-1">Your order list (Total orders: {{orders|length}})</h3>
+	<h3 class="my-4 border-bottom pb-1">Order list (Total orders: {{orders|length}})
+		<span class="float-right">
+			Shop User Id : {{shopuser.id}}
+		</span>
+	</h3>
+
+	
     
     {% for order in orders %}
 
@@ -28,7 +34,7 @@
 		<tbody>
 			{% for product in order.products.all %}
 			<tr>
-                  {% if product.shopuser == request.user %}
+                  {% if product.shopuser == shopuser %}
 				<td>
 					<img src="/media/{{product.productattribute_set.first.image}}" width="50" />
 					<p>{{product.title}}</p>

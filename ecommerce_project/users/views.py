@@ -2,7 +2,8 @@ import json
 from allauth.account import views
 from allauth.account import app_settings
 from django.shortcuts import render
-from django.views import View
+from django.urls import reverse_lazy
+from django.views import View, generic
 from .forms import ModalForm
 
 from django.views.generic.list import ListView
@@ -67,52 +68,6 @@ class shopuser_details(View):
         print(request.POST.get('reason'))
         return render(request, self.template_name_approval, context)
 
-"""
-class ShopuserCrud(ListView):
-
-    template_name = template_name_details = "account/shopuser_crud." + app_settings.TEMPLATE_EXTENSION
-
-    model = get_user_model()
-    
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        qs = qs.filter(~Q(shop_name = "NA"))
-        qs = qs.filter(Q(is_active = True))
-        return qs
-
-    def get_context_data(self,**kwargs):
-        context = super(ShopuserCrud, self).get_context_data(**kwargs)
-        context['form'] = ModalForm()
-        return context
-
-    def post(self, request, *args, **kwargs):
-        super(ShopuserCrud, self).post(request, *args, **kwargs)
-        form = ModalForm()
-        data = {}
-        if 1:
-            form = ModalForm(request.POST)
-            if form.is_valid():
-                data['shop_name'] = form.cleaned_data.get('shop_name')
-                data['shop_type'] = form.cleaned_data.get('shop_type')
-                data['user_id'] = form.cleaned_data.get('user_id')
-                data['status'] = 'ok'
-
-                user_model = get_user_model()
-                user =  user_model.objects.get(id = data['user_id'])
-                user.shop_name = data['shop_name']
-                user.shop_type = data['shop_type']
-
-                return JsonResponse(data)
-            else:
-                data['status'] = 'error'
-                return JsonResponse(data)
-        context = {
-            'form':form
-        }
-        return render(request, 'template_name', context)
-        
-shopuser_crud = ShopuserCrud.as_view()
-"""
 
 class ShopuserCrud(View):
 
@@ -125,7 +80,7 @@ class ShopuserCrud(View):
         user_model = get_user_model()
         context = {}
        
-        context["object_list"] = user_model.objects.filter(~Q(shop_name = "NA"), is_active = True)
+        context["object_list"] = user_model.objects.filter(user_type = '2', is_active = True)
         context['form'] = ModalForm()
         return render(request, self.template_name, context)
 
@@ -200,3 +155,36 @@ def shopuser_add(request):
     return render(request, template_name, {
         'form': form,
     })
+
+
+class EditProfileCustomer(generic.UpdateView):
+
+    template_name = 'account/profile_edit.html'
+    model = get_user_model()
+    fields = ['email','username','dob','adress', 'gender']
+    success_url = reverse_lazy('accounts/profile')
+
+
+class EditProfileShopuser(generic.UpdateView):
+
+    template_name = 'account/profile_edit.html'
+    model = get_user_model()
+    fields = ['email','username','dob','adress', 'gender', 'shop_type', 'shop_name']
+    success_url = reverse_lazy('accounts/profile')
+
+
+def profile(request):
+
+    
+    id = request.GET.get('id')
+    if id:
+        user = get_user_model().objects.get(id = id)
+    else:
+        user = request.user
+
+    return render(request, 'account/profile.html', {'user':user,})
+
+    
+
+
+    

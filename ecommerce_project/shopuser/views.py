@@ -1,8 +1,13 @@
-from unicodedata import category
+"""
+    shopuser view
+"""
+
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.apps import apps
 from django.http import  JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 
 from .forms import *
 
@@ -14,15 +19,25 @@ Category = apps.get_model('product', 'Category')
 Color = apps.get_model('product', 'Color')
 Material = apps.get_model('product', 'Material')
 Order = apps.get_model('product', 'Order')
+ProductSalesBrand = apps.get_model('product', 'ProductSalesBrand')
+ProductSalesCat = apps.get_model('product', 'ProductSalesCat')
+
+
 
 # shopuser_product
+@login_required
 def shopuser_products(request):
 
     """
 		shopuser_product view
 	"""
-    
-    shopuser = request.user
+    if request.user.user_type == '1':
+
+        shopuser = request.GET.get('s_id')
+
+    else:
+
+        shopuser = request.user
 
     Product = apps.get_model('product', 'Product')
 
@@ -39,6 +54,7 @@ def shopuser_products(request):
 
 
 # pblish/unpblish products
+@login_required
 def pblish_unpblish_products(request):
 
     """
@@ -69,6 +85,7 @@ def pblish_unpblish_products(request):
     
 
 # update product
+@login_required
 def product_update(request):
 
     """
@@ -122,6 +139,7 @@ def product_update(request):
 
     
 # delete products
+@login_required
 def product_delete(request):
 
     """
@@ -142,6 +160,7 @@ def product_delete(request):
 
 
 # add product
+@login_required
 def product_add(request):
 
     """
@@ -193,18 +212,94 @@ def product_add(request):
 
 
 # shop user order list
+@login_required
 def shopuser_order_list(request):
 
     """
 		shop user orders
 	"""
-    shopuser = request.user
+
+    if request.user.user_type == '1':
+
+        shopuser_id = request.GET.get('s_id')
+        shopuser = get_user_model().objects.get(id = shopuser_id)
+
+    else:
+
+        shopuser = request.user
 
     orders = Order.objects.filter(products__shopuser = shopuser).distinct()
+   
 
-    return render(request, 'shopuser_orders.html', {'orders':orders,})
+    return render(request, 'shopuser_orders.html', {'orders':orders, 'shopuser':shopuser})
     
-			
+
+# shop user order percentage list
+@login_required
+def shopuser_order_percentage(request):
+
+    """
+		shop user orders percentage
+	"""
+
+    if request.user.user_type == '1':
+
+        shopuser_id = request.GET.get('s_id')
+        shopuser = get_user_model().objects.get(id = shopuser_id)
+
+    else:
+
+        shopuser = request.user
+
+    brands = Brand.objects.all().distinct().order_by('id')
+    cats = Category.objects.all().distinct()
+
+    for brand in brands:
+
+        if ProductSalesBrand.objects.filter(shopuser = shopuser, brand = brand).exists():
+
+            brand_sale = ProductSalesBrand.objects.get(shopuser = shopuser, brand = brand)
+            total = Product.objects.filter(brand = brand, shopuser = shopuser).distinct().count()
+            sold =  Product.objects.filter(brand = brand, shopuser = shopuser, sold = True).distinct().count()
+            brand_sale.total = total
+            brand_sale.sold = sold
+            brand_sale.brand = brand
+            brand_sale.save()
+
+        else :
+
+            total = Product.objects.filter(brand = brand, shopuser = shopuser).distinct().count()
+            sold =  Product.objects.filter(brand = brand, shopuser = shopuser, sold = True).distinct().count()
+            brand_sale = ProductSalesBrand(shopuser = shopuser, total = total, sold = sold, brand = brand)
+            brand_sale.save()
+
+    prod_sale_brand = ProductSalesBrand.objects.filter(shopuser = shopuser).order_by('brand__id')
+
+
+    for cat in cats:
+
+        if ProductSalesCat.objects.filter(shopuser = shopuser, category = cat).exists():
+
+            cat_sale = ProductSalesCat.objects.get(shopuser = shopuser, category = cat)
+            total = Product.objects.filter(category = cat, shopuser = shopuser).distinct().count()
+            sold =  Product.objects.filter(category = cat, shopuser = shopuser, sold = True).distinct().count()
+            cat_sale.total = total
+            cat_sale.sold = sold
+            cat_sale.cat = cat
+            cat_sale.save()
+
+        else :
+
+            total = Product.objects.filter(category = cat, shopuser = shopuser).distinct().count()
+            sold =  Product.objects.filter(category = cat, shopuser = shopuser, sold = True).distinct().count()
+            cat_sale = ProductSalesCat(shopuser = shopuser, total = total, sold = sold, category = cat)
+            cat_sale.save()
+
+    prod_sale_cat = ProductSalesCat.objects.filter(shopuser = shopuser).order_by('category__id')
+
+
+
+    return render(request, 'shopuser_order_percetage.html', {'prod_sale_brand':prod_sale_brand, 'prod_sale_cat':prod_sale_cat, 'shopuser':shopuser})			
             
 	
 		

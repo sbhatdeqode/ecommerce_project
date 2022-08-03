@@ -1,8 +1,10 @@
-{% extends 'account/base.html' %}
+{% extends 'account/basex.html' %}
 {% load static %}
 {% load i18n %}
 {% load  widget_tweaks %}
 {% block content %}
+
+<main class="container my-4">
 {% if request.user.is_admin %}
 <br>
 <p>Do you want to add shop user?   <a href="{% url 'add_shopuser' %}"><button class="btn btn-danger btn-sm">ADD</button></a></p>
@@ -55,7 +57,7 @@
   {% else %}
     <p> You are not authorized to see this page. Please login as admin.</p>
   {% endif %}
-
+</main>
 {% endblock content %}
  
 {% block js %} 

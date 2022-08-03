@@ -6,13 +6,14 @@ from django.shortcuts import render
 from django.http import  JsonResponse
 from django.template.loader import render_to_string
 from django.db.models import Max, Min
-from django.contrib import messages
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 
 from .models import *
 
 
 # product_list
+@login_required
 def product_list(request):
 
 	"""
@@ -36,6 +37,7 @@ def product_list(request):
 
 
 # Search
+@login_required
 def search(request):
 
 	"""
@@ -48,6 +50,7 @@ def search(request):
 
 
 # Filter Data
+@login_required
 def filter_data(request): 
 
 	"""
@@ -82,6 +85,7 @@ def filter_data(request):
 
 
 # Load More
+@login_required
 def load_more_data(request):
 
 	"""
@@ -97,13 +101,15 @@ def load_more_data(request):
 
 
 # cart add
+@login_required
 def cart_add(request):
 
 	"""
 		cart_add view
 	"""
 
-	product_id = int(request.GET['product_id'])
+	product_id = request.GET.get('product_id')
+	
 
 	customer = request.user
 	product = Product.objects.get(id = product_id)
@@ -126,7 +132,9 @@ def cart_add(request):
 
 	return JsonResponse({'totalitems':len(carts), 'message':message})
 
+
 # cart list
+@login_required
 def cart_list(request):
 
 	"""
@@ -149,6 +157,7 @@ def cart_list(request):
 
 
 # cart delete
+@login_required
 def cart_delete(request):
 
 	"""
@@ -175,6 +184,7 @@ def cart_delete(request):
 
 
 # wishlist add
+@login_required
 def wishlist_add(request):
 
 	"""
@@ -189,7 +199,7 @@ def wishlist_add(request):
 	if Wishlist.objects.filter(product__id = product_id).exists():
 
 		wishlists = Wishlist.objects.filter(customer = customer)
-		message = "Item already exists in the cart"
+		message = "Item already exists in the wishlist"
 
 		return JsonResponse({'totalitems':len(wishlists), 'message':message})
 
@@ -203,6 +213,7 @@ def wishlist_add(request):
 
 
 # wishlist list
+@login_required
 def wishlist_list(request):
 
 	"""
@@ -217,6 +228,7 @@ def wishlist_list(request):
 
 
 # wishlist delete
+@login_required
 def wishlist_delete(request):
 
 	"""
@@ -236,6 +248,7 @@ def wishlist_delete(request):
 
 
 # place order
+@login_required
 def place_order(request):
 
 	"""
@@ -256,6 +269,7 @@ def place_order(request):
 		pa = ProductAttribute.objects.get(product = c.product)
 		total_amount += pa.price
 		c.product.sold = True
+		c.product.save()
 		order.products.add(c.product)
 		c.delete()
 
@@ -266,6 +280,7 @@ def place_order(request):
 
 
 # Buy Now
+@login_required
 def buy_now(request):
 
 	"""
@@ -292,6 +307,7 @@ def buy_now(request):
 	pa = ProductAttribute.objects.get(product = product)
 	total_amount += pa.price
 	product.sold = True
+	product.save()
 	order.products.add(product)
 	order.total_amount = total_amount
 	order.save()
@@ -300,12 +316,20 @@ def buy_now(request):
 
 
 # order list
+@login_required
 def order_list(request):
 
 	"""
 		place order view
 	"""
-	customer = request.user
+	
+	if request.user.get_user_type_display() == 'Admin':
+
+		c_id = request.GET.get('c_id')
+		customer = get_user_model().objects.get(id = c_id)
+
+	else :
+		customer = request.user
 
 	orders = Order.objects.filter(customer = customer)
 
@@ -313,6 +337,7 @@ def order_list(request):
 
 
 # cancel order
+@login_required
 def order_cancel(request):
 
 	"""
@@ -331,5 +356,20 @@ def order_cancel(request):
 	orders = Order.objects.filter(customer = customer)
 
 	return render(request, 'order_list.html', {'orders':orders,})
+
+
+# Product Detail
+@login_required
+def product_detail(request):
+
+	"""
+		Product Detail
+	"""
+
+	p_id = request.GET.get('p_id')
+
+	product = Product.objects.get(id = p_id)
+
+	return render(request, 'product_detail.html', {'product':product,})
 
 

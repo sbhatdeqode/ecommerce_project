@@ -1,4 +1,4 @@
-{% extends "account/base.html" %}
+{% extends "account/basex.html" %}
 
 {% load i18n %}
 
@@ -7,7 +7,7 @@
 {% block head_title %}{% trans "ADD SHOP USER SUCCESS" %}{% endblock %}
 
 {% block content %}
-
+<main class="container my-4">
 {% if request.user.is_admin %}
 <br>
 <br>
@@ -19,5 +19,5 @@
     <p> You are not authorized to see this page. Please login as admin.</p>
 {% endif %}
 
-
+</main>
 {% endblock %}

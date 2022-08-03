@@ -6,7 +6,7 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
-
+<main class="container my-4">
 <br><br>
 <h1>{% trans "Sign In" %}</h1>
 
@@ -51,5 +51,5 @@ for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
   <a class="button secondaryAction" href="{% url 'account_reset_password' %}"><h5>FORGOT PASSWORD?</h5></a>
 
 </form>
-
+</main>
 {% endblock %}

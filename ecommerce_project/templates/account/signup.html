@@ -1,4 +1,4 @@
-{% extends "account/base.html" %}
+{% extends "account/basex.html" %}
 
 {% load i18n %}
 
@@ -7,6 +7,7 @@
 {% block head_title %}{% trans "Signup" %}{% endblock %}
 
 {% block content %}
+<main class="container my-4">
 <br><br>
 <h1>{% trans "Sign Up" %}</h1>
 
@@ -80,4 +81,5 @@
   <button class = "btn btn-primary" type="submit">{% trans "Sign Up" %} &raquo;</button>
 </form>
 
+</main>
 {% endblock %}

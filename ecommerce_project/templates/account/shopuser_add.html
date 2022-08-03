@@ -1,4 +1,4 @@
-{% extends "account/base.html" %}
+{% extends "account/basex.html" %}
 
 {% load i18n %}
 
@@ -7,9 +7,12 @@
 {% block head_title %}{% trans "ADD SHOP USER" %}{% endblock %}
 
 {% block content %}
-
+<main class="container my-4">
 {% if request.user.is_admin %}
-<h1>{% trans "ADD" %}</h1>
+<br>
+<h3>{% trans "ADD SHOPUSER" %}</h3>
+<hr>
+<br>
 
 <form class="signup" id="signup_form" method="post" action="{% url 'add_shopuser' %}">
   <input type="hidden" name="user_type" value="2" />
@@ -78,4 +81,5 @@
     <p> You are not authorized to see this page. Please login as admin.</p>
 {% endif %}
 
+</main>
 {% endblock %}

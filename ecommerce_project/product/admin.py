@@ -35,7 +35,7 @@ class ProductAdmin(admin.ModelAdmin):
         Product
     """
 
-    list_display=('id','title','category','brand','published',)
+    list_display=('id','title','category','brand','published','sold')
     list_editable=('published',)
 admin.site.register(Product,ProductAdmin)
 

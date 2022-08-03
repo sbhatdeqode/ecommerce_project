@@ -2,6 +2,7 @@
     product models
 """
 
+from unicodedata import category
 from django.utils.html import mark_safe
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -180,3 +181,31 @@ class Order(models.Model):
 
     class Meta:
         verbose_name_plural = '9. Orders'
+
+
+# product sales Brandwise
+class ProductSalesBrand(models.Model):
+
+    """
+        Product Sales Brandwise  Model
+    """
+
+    user = get_user_model()
+    brand = models.ForeignKey(Brand, on_delete = models.CASCADE)
+    shopuser =  models.ForeignKey(user, on_delete = models.CASCADE)
+    total = models.BigIntegerField( default = 0)
+    sold = models.BigIntegerField( default = 0)
+
+
+# product sales catwise
+class ProductSalesCat(models.Model):
+
+    """
+        Product Sales Category wise  Model
+    """
+
+    user = get_user_model()
+    category = models.ForeignKey(Category, on_delete = models.CASCADE)
+    shopuser =  models.ForeignKey(user, on_delete = models.CASCADE)
+    total = models.BigIntegerField( default = 0)
+    sold = models.BigIntegerField( default = 0)

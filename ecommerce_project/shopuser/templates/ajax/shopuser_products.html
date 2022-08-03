@@ -4,9 +4,9 @@
 				{% for product in shopuser_products %}
 				<div class="col-lg-4 col-md-6 mb-4 product-box">
 					<div class="card shadow">
-					  <a href=""><img src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{product.title}}"></a>
+					  <a href="{% url 'product_detail'%}?p_id={{product.id}}"><img src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{product.title}}"></a>
 					  <div class="card-body">
-					    <h5 class="card-text"><a href="">{{product.title}}</a></h5>
+					    <h5 class="card-text"><a href="{% url 'product_detail'%}?p_id={{product.id}}">{{product.title}}</a></h5>
 					    <h6>Rs. <span class="product-price-{{product.id}}">{{product.productattribute_set.first.price}}</span></h6>
 					  </div>
 					  	<div class="card-footer">

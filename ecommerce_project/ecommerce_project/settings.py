@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'product',
     'shopuser',
+    'adminops',
    
     # allauth
     'django.contrib.sites',
@@ -79,7 +80,13 @@ ROOT_URLCONF = 'ecommerce_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'templates', 'accounts'), os.path.join(BASE_DIR, 'product', 'templates'), os.path.join(BASE_DIR, 'shopuser', 'templates')],
+        'DIRS': [
+                os.path.join(BASE_DIR, 'templates'),
+                os.path.join(BASE_DIR, 'templates', 'accounts'),
+                os.path.join(BASE_DIR, 'product', 'templates'), 
+                os.path.join(BASE_DIR, 'shopuser', 'templates'), 
+                os.path.join(BASE_DIR, 'adminops', 'template')
+                ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
