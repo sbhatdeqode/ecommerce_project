@@ -1,8 +1,11 @@
 {% extends 'shopuser_base.html' %}
 {% block content %}
 <main class="container my-4">
+	{% if request.user.user_type == '2' %}
 	<!-- Featured Products -->
 	<h3 class="my-4 border-bottom pb-1">Prodct success fully updated</h3>
-	
+	{% else %}
+    <p> You are not authorized to see this page. Please login as Shopuser.</p>
+    {% endif %}
 </main>
 {% endblock %}

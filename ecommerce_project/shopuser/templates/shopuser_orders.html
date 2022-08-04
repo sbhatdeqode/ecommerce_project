@@ -1,7 +1,8 @@
-{% extends 'basex.html' %}
+{% extends 'shopuser_base.html' %}
 {% load static %}
 {% block content %}
 <main class="container my-4" id="cartList">
+	{% if request.user.user_type == '1' or  request.user.user_type == '2' %}
 	<h3 class="my-4 border-bottom pb-1">Order list (Total orders: {{orders|length}})
 		<span class="float-right">
 			Shop User Id : {{shopuser.id}}
@@ -69,6 +70,10 @@
 
     {% endif %}
     {% endfor %}
+
+	{% else %}
+    <p> You are not authorized to see this page. Please login as shopuser.</p>
+    {% endif %}
 
 </main>
 {% endblock %}

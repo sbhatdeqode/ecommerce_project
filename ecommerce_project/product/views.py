@@ -8,140 +8,224 @@ from django.template.loader import render_to_string
 from django.db.models import Max, Min
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.views import View
+from django.utils.decorators import method_decorator
 
 from .models import *
 
 
-# product_list
+# home
 @login_required
-def product_list(request):
+def home(request):
+	
+	"""
+		home
+	"""
+    
+	if request.user.user_type == '1':
+
+		response = redirect('adminops/adminops_home')
+		return response
+
+	elif request.user.user_type == '2':
+
+		response = redirect('shopuser/shopuser_products')
+		return response
+
+	else:
+		response = redirect('products/product_list')
+		return response
+
+
+# product_list
+class ProductList(View):
 
 	"""
 		product_list view
 	"""
 
-	total_data = Product.objects.count()
-	data = Product.objects.all().order_by('-id')[:1]
-    
-	min_price = ProductAttribute.objects.aggregate(Min('price'))
-	max_price = ProductAttribute.objects.aggregate(Max('price'))
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+
+		return super().dispatch(*args, **kwargs)
+
+
+	def get(self, request):
+
+		total_data = Product.objects.count()
+		data = Product.objects.filter(published = True).order_by('-id')
+
+		p = Paginator(data, 6)
+		page = request.GET.get('page')
+		datas = p.get_page(page)
    
-	return render(request, 'productx_list.html',
-		{
-			'data':data,
-			'total_data':total_data,
-			'min_price':min_price,
-			'max_price':max_price,
-		}
-		)
+		return render(request, 'productx_list.html',
+								{
+									'datas':datas,
+			
+									'total_data':total_data,
+			
+								}
+					)
 
 
 # Search
-@login_required
-def search(request):
+class Search(View):
 
 	"""
 		search view
 	"""
 
-	q = request.GET['q']
-	data = Product.objects.filter(title__icontains = q).order_by('-id')
-	return render(request, 'search.html', {'data':data})
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+
+		return super().dispatch(*args, **kwargs)
+
+	def get(self, request):
+
+		q = request.GET['q']
+		data = Product.objects.filter(title__icontains = q, published = True).order_by('-id')
+		return render(request, 'search.html', {'data':data})
 
 
-# Filter Data
-@login_required
-def filter_data(request): 
+# filter_data view
+class FilterData(View):
 
 	"""
 		filter_data view
 	"""
 
-	colors = request.GET.getlist('color[]')
-	categories = request.GET.getlist('category[]')
-	brands = request.GET.getlist('brand[]')
-	sizes = request.GET.getlist('size[]')
-	minPrice = request.GET['minPrice']
-	maxPrice = request.GET['maxPrice']
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
 
-	allProducts = Product.objects.all().order_by('-id').distinct()
-	allProducts = allProducts.filter(productattribute__price__gte = minPrice)
-	allProducts = allProducts.filter(productattribute__price__lte = maxPrice)
+		return super().dispatch(*args, **kwargs)
 
-	if len(colors)>0:
-		allProducts = allProducts.filter(productattribute__color__id__in = colors).distinct()
+	def get(self, request):
 
-	if len(categories)>0:
-		allProducts = allProducts.filter(category__id__in = categories).distinct()
+		colors = request.GET.getlist('color[]')
+		categories = request.GET.getlist('category[]')
+		brands = request.GET.getlist('brand[]')
+		sizes = request.GET.getlist('size[]')
+		price = request.GET.get('price')
 
-	if len(brands)>0:
-		allProducts = allProducts.filter(brand__id__in = brands).distinct()
+		allProducts = Product.objects.filter(published = True).order_by('-id').distinct()
 
-	if len(sizes)>0:
-		allProducts = allProducts.filter(productattribute__size__id__in = sizes).distinct()
+		if price :
 
-	t = render_to_string('ajax/productx_list.html', {'data' : allProducts})
-	return JsonResponse({'data' : t})
+			if price == 'low':
 
+				allProducts = Product.objects.filter(published = True).order_by('productattribute__price').distinct()
 
-# Load More
-@login_required
-def load_more_data(request):
+			elif price == 'high':
 
-	"""
-		load_more_data view
-	"""
+				allProducts = Product.objects.filter(published = True).order_by('-productattribute__price').distinct()
 
-	offset = int(request.GET['offset'])
-	limit = int(request.GET['limit'])
-	data = Product.objects.all().order_by('-id')[offset: offset + limit]
-	t = render_to_string('ajax/productx_list.html', {'data':data})
+		if len(colors)>0:
+			allProducts = allProducts.filter(productattribute__color__id__in = colors).distinct()
 
-	return JsonResponse({'data':t})
+		if len(categories)>0:
+			allProducts = allProducts.filter(category__id__in = categories).distinct()
 
+		if len(brands)>0:
+			allProducts = allProducts.filter(brand__id__in = brands).distinct()
 
-# cart add
-@login_required
-def cart_add(request):
+		if len(sizes)>0:
+			allProducts = allProducts.filter(productattribute__size__id__in = sizes).distinct()
 
-	"""
-		cart_add view
-	"""
+		p = Paginator(allProducts, 6)
+		page = request.GET.get('page')
+		datas = p.get_page(page)
 
-	product_id = request.GET.get('product_id')
+		t = render_to_string('ajax/productx_list.html', {'data' : datas})
+		return JsonResponse({'data' : t})
 	
 
-	customer = request.user
-	product = Product.objects.get(id = product_id)
+# Cart Add
+class CartAdd(View):
 
-	if Cart.objects.filter(product__id = product_id).exists():
+	"""
+		Cart Add view
+	"""
 
-		message = "Item already exists in the cart"
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+
+		return super().dispatch(*args, **kwargs)
+
+	def get(self, request):
+
+		product_id = request.GET.get('product_id')
+	
+		customer = request.user
+		product = Product.objects.get(id = product_id)
+
+		if Cart.objects.filter(product__id = product_id, customer = request.user).exists():
+
+			message = "Item already exists in the cart"
+
+			carts = Cart.objects.filter(customer = customer)
+
+			return JsonResponse({'totalitems':len(carts), 'message':message})
+
+		cart = Cart(customer = customer, product = product )
+		cart.save()
 
 		carts = Cart.objects.filter(customer = customer)
+		message = "Item added to cart"
 
 		return JsonResponse({'totalitems':len(carts), 'message':message})
 
 
-
-	cart = Cart(customer = customer, product = product )
-	cart.save()
-
-	carts = Cart.objects.filter(customer = customer)
-	message = "Item added to cart"
-
-	return JsonResponse({'totalitems':len(carts), 'message':message})
-
-
-# cart list
-@login_required
-def cart_list(request):
+# Cart List
+class CartList(View):
 
 	"""
-		cart_list view
+		Cart List view
 	"""
-   
-	if request.user.is_authenticated:
+
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+
+		return super().dispatch(*args, **kwargs)
+
+	def get(self, request):
+
+		if request.user.is_authenticated:
+			cart = Cart.objects.filter(customer = request.user)
+			total_amount = 0
+
+			if cart:
+				for c in cart:
+
+					pa = ProductAttribute.objects.get(product = c.product)
+					total_amount += pa.price
+
+			return render(request, 'cart.html', {'total_amount': total_amount})
+
+		return redirect('/account/login/')
+
+
+# Cart Delete
+class CartDelete(View):
+
+	"""
+		Cart Delete view
+	"""
+
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+
+		return super().dispatch(*args, **kwargs)
+
+	def get(self, request):
+
+		product_id = request.GET['id']
+		
+		cart_d = Cart.objects.filter(product__id = product_id, customer = request.user).first()
+		cart_d.delete()
+
+		cart_products = Cart.objects.filter(customer = request.user)
 		cart = Cart.objects.filter(customer = request.user)
 		total_amount = 0
 
@@ -151,225 +235,258 @@ def cart_list(request):
 				pa = ProductAttribute.objects.get(product = c.product)
 				total_amount += pa.price
 
-		return render(request, 'cart.html', {'total_amount': total_amount})
-
-	return redirect('/admin/login/')
-
-
-# cart delete
-@login_required
-def cart_delete(request):
-
-	"""
-		cart_delete view
-	"""
-  
-	product_id = request.GET['id']
-	
-	cart_d = Cart.objects.filter(product__id = product_id).first()
-	cart_d.delete()
-
-	cart_products = Cart.objects.filter(customer = request.user)
-	cart = Cart.objects.filter(customer = request.user)
-	total_amount = 0
-
-	if cart:
-		for c in cart:
-
-			pa = ProductAttribute.objects.get(product = c.product)
-			total_amount += pa.price
-
-	t = render_to_string('ajax/cart.html',{'total_amount':total_amount, 'cart_products':cart_products})
-	return JsonResponse({'data':t,'totalitems':len(cart_products)})
+		t = render_to_string('ajax/cart.html',{'total_amount':total_amount, 'cart_products':cart_products})
+		return JsonResponse({'data':t,'totalitems':len(cart_products)})
 
 
-# wishlist add
-@login_required
-def wishlist_add(request):
+# wishlist_add
+class WishlistAdd(View):
 
 	"""
 		wishlist_add view
 	"""
 
-	product_id = int(request.GET['product_id'])
-    
-	customer = request.user
-	product = Product.objects.get(id = product_id)
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
 
-	if Wishlist.objects.filter(product__id = product_id).exists():
+		return super().dispatch(*args, **kwargs)
+
+
+	def get(self, request):
+
+		product_id = int(request.GET['product_id'])
+		
+		customer = request.user
+		product = Product.objects.get(id = product_id)
+
+		if Wishlist.objects.filter(product__id = product_id, customer = customer).exists():
+
+			wishlists = Wishlist.objects.filter(customer = customer)
+			message = "Item already exists in the wishlist"
+
+			return JsonResponse({'totalitems':len(wishlists), 'message':message})
+
+		wishlist = Wishlist(customer = customer, product = product )
+		wishlist.save()
 
 		wishlists = Wishlist.objects.filter(customer = customer)
-		message = "Item already exists in the wishlist"
+		message = "Item is added to wishlist"
 
 		return JsonResponse({'totalitems':len(wishlists), 'message':message})
 
-	wishlist = Wishlist(customer = customer, product = product )
-	wishlist.save()
-
-	wishlists = Wishlist.objects.filter(customer = customer)
-	message = "Item is added to wishlist"
-
-	return JsonResponse({'totalitems':len(wishlists), 'message':message})
-
 
 # wishlist list
-@login_required
-def wishlist_list(request):
+class WishlistList(View):
 
 	"""
 		wishlist_list view
 	"""
-   
-	if request.user.is_authenticated:
 
-		return render(request, 'wishlist.html',)
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
 
-	return redirect('/admin/login/')
+		return super().dispatch(*args, **kwargs)
 
+	def get(self, request):
 
-# wishlist delete
-@login_required
-def wishlist_delete(request):
+		if request.user.is_authenticated:
+
+			wishlist_products = Wishlist.objects.filter(customer = request.user)
+
+			return render(request, 'wishlist.html',{'wishlist_products':wishlist_products})
+
+		return redirect('/admin/login/')
+
+	
+# wishlist Delete
+class WishlistDelete(View):
 
 	"""
-		wishlist_delete view
+		Wishlist Delete view
 	"""
-  
-	product_id = request.GET['id']
-	
-	wish_d = Wishlist.objects.filter(product__id = product_id).first()
-	wish_d.delete()
 
-	wishlist_products = Wishlist.objects.filter(customer = request.user)
-	
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
 
-	t = render_to_string('ajax/wishlist.html',{'wishlist_products':wishlist_products})
-	return JsonResponse({'data':t, 'totalitems':len(wishlist_products), 'message': "Item successfully deleted" })
+		return super().dispatch(*args, **kwargs)
+
+	def get(self, request):
+
+		product_id = request.GET['id']
+	
+		wish_d = Wishlist.objects.filter(product__id = product_id, customer = request.user).first()
+		wish_d.delete()
+
+		wishlist_products = Wishlist.objects.filter(customer = request.user)
+		
+		t = render_to_string('ajax/wishlist.html',{'wishlist_products':wishlist_products})
+		return JsonResponse({'data':t, 'totalitems':len(wishlist_products), 'message': "Item successfully deleted" })
 
 
 # place order
-@login_required
-def place_order(request):
+class PlaceOrder(View):
 
 	"""
-		place order view
+		 place order view
 	"""
 
-	customer = request.user
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
 
-	cart = Cart.objects.filter(customer = customer)
+		return super().dispatch(*args, **kwargs)
 
-	order = Order(customer = customer)
-	order.save()
+	def get(self, request):
 
-	total_amount = 0
+		customer = request.user
 
-	for c in cart:
-        
-		pa = ProductAttribute.objects.get(product = c.product)
-		total_amount += pa.price
-		c.product.sold = True
-		c.product.save()
-		order.products.add(c.product)
-		c.delete()
+		cart = Cart.objects.filter(customer = customer)
+		
 
-	order.total_amount = total_amount
-	order.save()
+		order = Order(customer = customer)
+		order.save()
 
-	return render(request, 'order.html', {'order':order, 'total_amount':total_amount})
+		total_amount = 0
+
+		for c in cart:
+			
+			pa = ProductAttribute.objects.get(product = c.product)
+			total_amount += pa.price
+			c.product.sold = True
+			c.product.save()
+			order.products.add(c.product)
+			c.delete()
+			wishlist = Wishlist.objects.filter(customer = customer, product =c.product)
+			wishlist.delete()
+
+		order.total_amount = total_amount
+		order.save()
+
+		return render(request, 'order.html', {'order':order, 'total_amount':total_amount})
 
 
 # Buy Now
-@login_required
-def buy_now(request):
+class BuyNow(View):
 
 	"""
-		place order view
+		 Buy Now view
 	"""
 
-	customer = request.user
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
 
-	p_id = request.GET['pid']
+		return super().dispatch(*args, **kwargs)
 
-	product = Product.objects.get(id = p_id)
-
-	total_amount = 0
-
-
-	if Cart.objects.filter(product__id = p_id).exists():
-
-		cart = Cart.objects.filter(product__id = p_id)
-		cart.delete()
-
-	order = Order(customer = customer)
-	order.save()
-
-	pa = ProductAttribute.objects.get(product = product)
-	total_amount += pa.price
-	product.sold = True
-	product.save()
-	order.products.add(product)
-	order.total_amount = total_amount
-	order.save()
-
-	return render(request, 'order.html',{'order':order, 'total_amount':total_amount})
+	def get(self, request):
 
 
-# order list
-@login_required
-def order_list(request):
-
-	"""
-		place order view
-	"""
-	
-	if request.user.get_user_type_display() == 'Admin':
-
-		c_id = request.GET.get('c_id')
-		customer = get_user_model().objects.get(id = c_id)
-
-	else :
 		customer = request.user
 
-	orders = Order.objects.filter(customer = customer)
+		p_id = request.GET['pid']
 
-	return render(request, 'order_list.html', {'orders':orders,})
+		product = Product.objects.get(id = p_id)
+
+		total_amount = 0
+
+		if Cart.objects.filter(product__id = p_id, customer = request.user).exists():
+
+			cart = Cart.objects.filter(product__id = p_id, customer = request.user)
+			cart.delete()
+
+		if Wishlist.objects.filter(product__id = p_id, customer = request.user).exists():
+
+			wishlist = Wishlist.objects.filter(product__id = p_id, customer = request.user)
+			wishlist.delete()
+
+		order = Order(customer = customer)
+		order.save()
+
+		pa = ProductAttribute.objects.get(product = product)
+		total_amount += pa.price
+		product.sold = True
+		product.save()
+		order.products.add(product)
+		order.total_amount = total_amount
+		order.save()
+
+		return render(request, 'order.html',{'order':order, 'total_amount':total_amount})
 
 
-# cancel order
-@login_required
-def order_cancel(request):
+# Order List
+class OrderList(View):
 
 	"""
-		cancel order view
+		Order List view
 	"""
 
-	order_id = request.GET['order_id']
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
 
-	order = Order.objects.get(id = str(order_id) )
+		return super().dispatch(*args, **kwargs)
 
-	order.delete()
+	def get(self, request):
+
+		if request.user.get_user_type_display() == 'Admin':
+
+			c_id = request.GET.get('c_id')
+			customer = get_user_model().objects.get(id = c_id)
+
+		else :
+			customer = request.user
+
+		orders = Order.objects.filter(customer = customer)
+
+		return render(request, 'order_list.html', {'orders':orders,})
 
 
-	customer = request.user
 
-	orders = Order.objects.filter(customer = customer)
 
-	return render(request, 'order_list.html', {'orders':orders,})
+
+# Order Cancel
+class OrderCancel(View):
+
+	"""
+		Order Cancel view
+	"""
+
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
+
+		return super().dispatch(*args, **kwargs)
+
+	def get(self, request):
+
+		order_id = request.GET['order_id']
+
+		order = Order.objects.get(id = str(order_id) )
+
+		order.cancelled = True
+		order.save()
+
+		customer = request.user
+
+		orders = Order.objects.filter(customer = customer)
+
+		return render(request, 'order_list.html', {'orders':orders,})
 
 
 # Product Detail
-@login_required
-def product_detail(request):
+class ProductDetail(View):
 
 	"""
-		Product Detail
+		Product Detail view
 	"""
 
-	p_id = request.GET.get('p_id')
+	@method_decorator(login_required)
+	def dispatch(self, *args, **kwargs):
 
-	product = Product.objects.get(id = p_id)
+		return super().dispatch(*args, **kwargs)
 
-	return render(request, 'product_detail.html', {'product':product,})
+	def get(self, request):
+
+		p_id = request.GET.get('p_id')
+
+		product = Product.objects.get(id = p_id)
+
+		return render(request, 'product_detail.html', {'product':product,})
 
 

@@ -1,28 +1,63 @@
 {% extends 'basex.html' %}
 {% load static %}
 {% block content %}
+
+
 <main class="container my-4">
-	<!-- Featured Products -->
-	<h3 class="my-4 border-bottom pb-1"><span class="text-muted">Search result for</span> {{request.GET.q}}</h3>
-	<div class="row">
-    {% for product in data %}
-		<div class="col-md-3 mb-4">
-			<div class="card shadow">
-			  <a href=""><img src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{product.title}}"></a>
-			  <div class="card-body">
-			    <h6 class="card-text"><a href="">{{product.title}}</a></h6>
-			  </div>
-			  <div class="card-footer">
-			  	<button class="btn btn-sm btn-primary"><i class="fa fa-shopping-cart"></i></button>
-			  	<button class="btn btn-sm btn-danger"><i class="fa fa-heart"></i></button>
-			  	<span class="float-right">
-			  		{{product.productattribute_set.first.get_rating_display}}/5
-			  		<i class="fa fa-star text-warning"></i>
-			  	</span>
-			  </div>
+    {% if request.user.user_type == '3' %}
+	
+    <div class="row">
+		
+		<div class="col-md-9">
+			<h3 class="my-4 border-bottom pb-1"><span class="text-muted">Search result for</span> {{request.GET.q}}</h3>
+			<div class="row" id="filteredProducts">
+				
+				{% for product in data %}
+				<div class="col-lg-4 col-md-6 mb-4 product-box">
+					<div class="card shadow">
+					  <a href="{% url 'product_detail'%}?p_id={{product.id}}"><img src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{product.title}}"></a>
+					  <div class="card-body">
+					    <h5 class="card-text"><a href="{% url 'product_detail'%}?p_id={{product.id}}">{{product.title}}</a></h5>
+					    <h6>$ <span class="product-price-{{product.id}}">{{product.productattribute_set.first.price}}</span></h6>
+					  </div>
+					  	<div class="card-footer">
+			
+				
+				          <input type="hidden" class="product-id-{{product.id}}" value="{{product.id}}" />
+				
+							  	<button class="btn btn-sm btn-primary add-to-cart" data-index="{{product.id}}"><i class="fa fa-shopping-cart"></i></button>
+							  	<button class="btn btn-sm btn-danger add-to-wishlist" data-index="{{product.id}}"><i class="fa fa-heart"></i></button>
+								  <a href="{% url 'buy_now' %}?pid={{product.id}}"><button class="btn btn-sm btn-primary" >Buy Now</button> </a>
+							  	<span class="float-right">
+							  		{{product.productattribute_set.first.get_rating_display}}/5
+							  		<i class="fa fa-star text-warning"></i>
+							  	</span>
+					  	</div>
+					</div>
+				</div>
+				{% endfor %}
 			</div>
+			
+			<!-- Empty toast to show the message -->
+				<div class="toast-container position-fixed top-0 end-0 p-3">
+					<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+					<div class="d-flex">
+						<div id="toast-body" class="toast-body"></div>
+						<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+					</div>
+				</div>
 		</div>
-    {% endfor %}
 	</div>
+    
+    		
+
+    {% else %}
+    <p> You are not authorized to see this page. Please login as customer.</p>
+    {% endif %}
 </main>
+{% endblock %}
+
+{% block extra_body %}
+
 {% endblock %}

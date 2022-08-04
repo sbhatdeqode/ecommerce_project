@@ -40,7 +40,7 @@
 
 
 		      <li class="nav-item dropdown">
-		        <a class="nav-link text-white dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		        <a class="nav-link text-white dropdown-toggle" href='#' id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		          <i class="fa fa-user"></i> {{request.user.email}}
 		        </a>
 		        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -67,7 +67,7 @@
 		  	
 		    <ul class="navbar-nav ml-auto">
 		      <li class="nav-item">
-		        <a class="nav-link text-white" href="">Shpuser Portal</a>
+		        <a class="nav-link text-white" href="{% url 'shopuser_products' %}">Shopuser Portal</a>
 		      </li>
 
 		      <li class="nav-item dropdown">

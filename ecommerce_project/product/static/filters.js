@@ -3,10 +3,12 @@ $(document).ready(function(){
 	// Product Filter Start
 	$(".filter-checkbox,#priceFilterBtn").on('click',function(){
 		var _filterObj={};
-		var _minPrice=$('#maxPrice').attr('min');
-		var _maxPrice=$('#maxPrice').val();
-		_filterObj.minPrice=_minPrice;
-		_filterObj.maxPrice=_maxPrice;
+
+		var select = document.getElementById("price");
+		var value = select.value;
+		_filterObj.price = value;
+		
+	
 		$(".filter-checkbox").each(function(index,ele){
 			var _filterVal=$(this).val();
 			var _filterKey=$(this).data('filter');
@@ -24,7 +26,7 @@ $(document).ready(function(){
 				$(".ajaxLoader").show();
 			},
 			success:function(res){
-				console.log(res);
+				
 				$("#filteredProducts").html(res.data);
 				$(".ajaxLoader").hide();
 			}
@@ -37,7 +39,7 @@ $(document).ready(function(){
 		var _min=$(this).attr('min');
 		var _max=$(this).attr('max');
 		var _value=$(this).val();
-		console.log(_value,_min,_max);
+		
 		if(_value < parseInt(_min) || _value > parseInt(_max)){
 			alert('Values should be '+_min+'-'+_max);
 			$(this).val(_min);

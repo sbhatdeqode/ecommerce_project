@@ -8,13 +8,13 @@ from . import views
 
 urlpatterns = [
     
-    path("shopuser_products/", views.shopuser_products, name = "shopuser_products"),
-    path("publish_unpublish/", views.pblish_unpblish_products, name = "publish_unpublish"),
-    path("product_update/", views.product_update, name = "product_update"),
-    path("product_delete/", views.product_delete, name = "product_delete"),
-    path("product_add/", views.product_add, name = "product_add"),
-    path("shopuser_order_list/", views.shopuser_order_list, name = "shopuser_order_list"),
-     path("shopuser_order_percentage/", views.shopuser_order_percentage, name = "shopuser_order_percentage"),
+    path("shopuser_products/", views.ShopuserProducts.as_view(), name = "shopuser_products"),
+    path("publish_unpublish/", views.PblishUnpblish.as_view(), name = "publish_unpublish"),
+    path("product_update/", views.ProductUupdate.as_view(), name = "product_update"),
+    path("product_delete/", views.ProductDelete.as_view(), name = "product_delete"),
+    path("product_add/", views.ProductAdd.as_view(), name = "product_add"),
+    path("shopuser_order_list/", views.ShopuserOrderList.as_view(), name = "shopuser_order_list"),
+     path("shopuser_order_percentage/", views.ShopuserOrderPercentage.as_view(), name = "shopuser_order_percentage"),
 
 
 ]

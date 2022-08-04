@@ -10,6 +10,6 @@
 
 <p>{% trans "This account is inactive." %}</p>
 
-<p><b>{{ user.get_username }} account will be activated by the admin.</b></p>
+<p><b>{{ request.user.email }} account will be activated by the admin.</b></p>
 </main>
 {% endblock %}

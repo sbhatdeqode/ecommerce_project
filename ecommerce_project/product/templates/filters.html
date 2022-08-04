@@ -1,17 +1,17 @@
 {% load static %}
-<script type="text/javascript" src="{% static 'filter.js' %}"></script>
+<script type="text/javascript" src="{% static 'filters.js' %}"></script>
 			<h3 class="mb-4 border-bottom pb-1">Filters</h3>
 			<!-- Price Filter -->
 			<div class="card mb-4">
 				<h6 class="card-header">Price</h6>
 				<div class="list-group list-group-flush">
-					<li class="list-group-item">
-						<input type="range" value="{{minMaxPrice.price__min}}" max={{minMaxPrice.price__max}} min={{minMaxPrice.price__min}} id="rangeInput" oninput="maxPrice.value=this.value" />
-						<p>{{minMaxPrice.price__min}}-{{minMaxPrice.price__max}}</p>
-					</li>
-					<li class="list-group-item">
-						Max: <input type="number" value="{{minMaxPrice.price__min}}" max={{minMaxPrice.price__max}} min={{minMaxPrice.price__min}} class="form-control" id="maxPrice" onkeyup="rangeInput.value=this.value" id="maxPrice" />
-						<button id="priceFilterBtn" class="btn btn-info btn-sm mt-1">Filter</button>
+					<li class="list-group-item"><br>
+						<select name="price" id="price">
+							<option value="low">Low to High</option>
+							<option value="high">High to Low</option>
+						</select>
+						<br><br>
+						<button id="priceFilterBtn" class="btn btn-info btn-sm mt-1">Sort</button>
 					</li>
 				</div>
 			</div>
@@ -52,4 +52,16 @@
 					{% endfor %}
 				</div>
 			</div>
-			
+			<!-- Filter 4 -->
+			<div class="card mb-4">
+				<h6 class="card-header">Material</h6>
+				<div class="list-group list-group-flush">
+					{% for mat in mats %}
+					<li class="list-group-item">
+						<input class="filter-checkbox" data-filter="mat" value="{{mat.material__id}}" type="checkbox" />&nbsp;
+						
+						{{mat.material__title}}
+					</li>
+					{% endfor %}
+				</div>
+			</div>

@@ -3,7 +3,7 @@
 {% block content %}
 
 <main class="container my-4">
-    {% if request.user.get_user_type_display == 'Admin' %}
+    {% if request.user.user_type == '3' %}
 	
     <div class="row">
 		<!-- Filters -->
@@ -17,7 +17,7 @@
 			</h3>
 			<div class="row" id="filteredProducts">
 				<p class="ajaxLoader">Loading...</p>
-				{% for product in data %}
+				{% for product in datas %}
 				<div class="col-lg-4 col-md-6 mb-4 product-box">
 					<div class="card shadow">
 					  <a href="{% url 'product_detail'%}?p_id={{product.id}}"><img src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{product.title}}"></a>
@@ -42,7 +42,46 @@
 				</div>
 				{% endfor %}
 			</div>
-			<p class="my-4 text-center"><button id="loadMore" data-total="{{total_data}}" data-limit="3" class="btn btn-dark btn-sm">Load More <i class="fa fa-sync load-more-icon"></i></button></p>
+
+			<nav aria-label="...">
+				<ul class="pagination">
+                    
+					<li class="page-item ">
+						<a class="page-link" href="?page=1">First Page </a>
+					  </li>
+
+					{% if datas.has_previous %}
+				  <li class="page-item ">
+					<a class="page-link" href="?page={{datas.previous_page_number}}" tabindex="-1">Previous</a>
+				  </li>
+
+				  {% else %}
+				  <li class="page-item disabled">
+					<a class="page-link" href="" tabindex="-1">Previous</a>
+				  </li>
+				  {% endif %}
+
+				  <li class="page-item active">
+					<a class="page-link" href="#">Current <span class="sr-only"></span></a>
+				  </li>
+
+				  {% if datas.has_next %} 
+				  <li class="page-item">
+					<a class="page-link" href="?page={{datas.next_page_number}}">Next</a>
+				  </li>
+				  {% else %}
+				  <li class="page-item disabled">
+					<a class="page-link" href="" tabindex="-1">Next</a>
+				  </li>
+				  {% endif %}
+
+				  <li class="page-item ">
+					<a class="page-link" href="?page={{datas.paginator.num_pages}}">Last Page </a>
+				  </li>
+				</ul>
+			  </nav>
+			
+			  
 			
 			<!-- Empty toast to show the message -->
 				<div class="toast-container position-fixed top-0 end-0 p-3">

@@ -69,6 +69,11 @@
 
         {% endif %}
 
-	</table>
+	</table><br><br>
+    {% if request.user == user %}
+    <a href="{% url 'account_email' %} "> <button class="btn btn-sm btn-primary" >Change Email</button> </a>
+    <a href="{% url 'account_change_password' %} "> <button class="btn btn-sm btn-primary" >Change Password</button> </a>
+    {% endif %}
 </main>
 {% endblock %}
+

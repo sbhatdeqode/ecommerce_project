@@ -17,7 +17,7 @@ $(document).ready(function(){
 				
 			},
 			success:function(res){
-				$("#filteredProducts").append(res.data);
+				$("#filteredProducts").html(res.data);
 				$("#loadMore").attr('disabled',false);
 				$(".load-more-icon").removeClass('fa-spin');
 

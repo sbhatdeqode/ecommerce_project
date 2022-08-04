@@ -162,7 +162,7 @@ class EditProfileCustomer(generic.UpdateView):
     template_name = 'account/profile_edit.html'
     model = get_user_model()
     fields = ['email','username','dob','adress', 'gender']
-    success_url = reverse_lazy('accounts/profile')
+    success_url = '/account/profile'
 
 
 class EditProfileShopuser(generic.UpdateView):
@@ -170,7 +170,7 @@ class EditProfileShopuser(generic.UpdateView):
     template_name = 'account/profile_edit.html'
     model = get_user_model()
     fields = ['email','username','dob','adress', 'gender', 'shop_type', 'shop_name']
-    success_url = reverse_lazy('accounts/profile')
+    success_url = '/account/profile'
 
 
 def profile(request):
