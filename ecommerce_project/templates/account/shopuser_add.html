@@ -13,69 +13,20 @@
 <h3>{% trans "ADD SHOPUSER" %}</h3>
 <hr>
 <br>
-
-<form class="signup" id="signup_form" method="post" action="{% url 'add_shopuser' %}">
-  <input type="hidden" name="user_type" value="2" />
-  
-  {% csrf_token %}
-  <div class="form-row align-items-center">
-     
-    <div class="col-md-6">
-      {{form.email|as_crispy_field}}
-      <div class="alert alert-danger">
-        <strong>{{form.email.errors|escape }}</strong>
-      </div>
-    </div><br>
-
-    
-
-    <div class="col-md-6">
-      {{form.username|as_crispy_field}}
-      <div class="alert alert-danger">
-        <strong>{{form.username.errors|escape }}</strong>
-      </div>
-    </div><br>
-
-    <div class="col-md-6">
-      {{form.dob|as_crispy_field}}
-      <div class="alert alert-danger">
-        <strong>{{form.dob.errors|escape }}</strong>
-      </div>
-    </div><br>
-
-    <div class="col-md-6">
-      {{form.adress|as_crispy_field}}
-      <div class="alert alert-danger">
-        <strong>{{form.adress.errors|escape }}</strong>
-    </div>
-    </div><br>
-
-    <div class="col-md-6">
-      {{form.gender|as_crispy_field}}
-      <div class="alert alert-danger">
-        <strong>{{form.gender.errors|escape }}</strong>
-    </div>
-    </div><br>
-
-    <div class="col-md-6">
-        {{form.shop_name|as_crispy_field}}
-        <div class="alert alert-danger">
-          <strong>{{form.shop_name.errors|escape }}</strong>
-      </div>
-      </div><br>
-
-    <div class="col-md-6">
-        {{form.shop_type|as_crispy_field}}
-        <div class="alert alert-danger">
-          <strong>{{form.shop_type.errors|escape }}</strong>
-        </div>
-    </div><br>
-
-    
-    
-  </div>
-  <button type="submit">{% trans "Add" %} &raquo;</button>
-</form>
+{{errors}}
+<table class="table table-bordered">
+  <form method="post" action="{% url 'add_shopuser' %}">
+    {% csrf_token %}
+      
+    {{form.as_table}}
+          
+    <tr>
+      <td colspan="2">
+        <input type="submit" value="Register" class="btn btn-primary" />
+      </td>
+    </tr>
+  </form>
+</table>
 
 {% else %}
     <p> You are not authorized to see this page. Please login as admin.</p>

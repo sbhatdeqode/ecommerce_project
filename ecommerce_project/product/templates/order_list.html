@@ -2,25 +2,32 @@
 {% load static %}
 {% block content %}
 <main class="container my-4" id="cartList">
-	<h3 class="my-4 border-bottom pb-1">Your order list (Total orders: {{orders|length}})</h3>
+	{% if request.user.user_type == '3' or request.user.user_type == '1' %}
+	<h3 class="my-4 border-bottom pb-1"> Order list (Total orders: {{orders|length}})
+		<span class="float-right">
+        
+			Customer Id : {{customer.id}}
+			
+		</span>
+	</h3>
     
     {% for order in orders %}
 
-        {% if not order.cancelled %}
         
-    
-    
+        
 	<br><br>
     <span class="float-left">
         
         <h4> Order Id :{{order.id}}</h4>
         
     </span>
+	{% if request.user.user_type == '3' %}
     <span class="float-right">
         
         <a href="{% url 'order_cancel' %}?order_id={{order.id}}"><button class="btn btn-sm btn-danger" >Cancel</button> </a>
         
     </span>
+	{% endif %}
     <br>
     <table class="table table-bordered">
 		<thead>
@@ -58,8 +65,12 @@
     <hr>
     <br>
 
-    {% endif %}
+   
     {% endfor %}
+
+	{% else %}
+    <p> You are not authorized to see this page. Please login as customer.</p>
+    {% endif %}
 
 </main>
 {% endblock %}

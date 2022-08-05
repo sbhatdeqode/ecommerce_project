@@ -2,28 +2,44 @@ import json
 from allauth.account import views
 from allauth.account import app_settings
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views import View, generic
-from .forms import ModalForm
-
 from django.views.generic.list import ListView
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import HttpResponse
 
+from .forms import ModalForm, ShopuserAddForm
+
 
 class ShopUserSignupView(views.SignupView):
+
+    """
+		Shopuser Signup View
+	"""
+
     template_name = "account/shop_user_signup." + app_settings.TEMPLATE_EXTENSION
 
 signup = ShopUserSignupView.as_view()
 
 class ShopUserListView(ListView):
+
+    """
+		Shopuser List View
+	"""
+
     model = get_user_model()
     template_name = "account/shopuser_list." + app_settings.TEMPLATE_EXTENSION
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+
+        return super().dispatch(*args, **kwargs)
+
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
-        qs = qs.filter(~Q(shop_name = "NA"))
+        qs = qs.filter(user_type = '2')
         qs = qs.filter(Q(is_active = False))
         return qs
 
@@ -32,8 +48,17 @@ shopuser_list = ShopUserListView.as_view()
 
 class shopuser_details(View):
 
+    """
+		Shopuser detail View
+	"""
+
     template_name_details = "account/shopuser_detail." + app_settings.TEMPLATE_EXTENSION
     template_name_approval = "account/shopuser_approval." + app_settings.TEMPLATE_EXTENSION
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
 
@@ -44,6 +69,7 @@ class shopuser_details(View):
         return render(request, self.template_name_details, context)
 
     def post(self, request):
+
         context = {}
 
         user_model = get_user_model()
@@ -71,9 +97,18 @@ class shopuser_details(View):
 
 class ShopuserCrud(View):
 
+    """
+		Shopuser crud View
+	"""
+
     template_name =  "account/shopuser_crud." + app_settings.TEMPLATE_EXTENSION
 
     model = get_user_model()
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
 
@@ -84,19 +119,42 @@ class ShopuserCrud(View):
         context['form'] = ModalForm()
         return render(request, self.template_name, context)
 
-
-
 shopuser_crud = ShopuserCrud.as_view()
 
-def update_shopuser(request, pk):
-    shop_user = get_user_model().objects.get(id = pk)
+        
+class UpdateShopuser(View):
+
+    """
+		Shopuser Update View
+	"""
+
     template_name =  "account/shopuser_update." + app_settings.TEMPLATE_EXTENSION
-    if request.method == "POST":
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+
+        pk = kwargs["pk"]
+        shop_user = get_user_model().objects.get(id = pk)
+        form = ModalForm
+        return render(request, self.template_name, {
+        'form': form,
+        'shop_user': shop_user,
+        })
+
+    def post(self, request, *args, **kwargs):
+
+        pk = kwargs["pk"]
+        shop_user = get_user_model().objects.get(id = pk)
         shop_type = request.POST.get("shop_type")
         shop_name = request.POST.get("shop_name")
         shop_user.shop_type = shop_type
         shop_user.shop_name = shop_name
         shop_user.save()
+
         return HttpResponse(
                 status=204,
                 headers={
@@ -106,20 +164,36 @@ def update_shopuser(request, pk):
                     })
                 }
             )
-    else:
-        form = ModalForm
-    return render(request, template_name, {
-        'form': form,
-        'shop_user': shop_user,
-    })
+        
 
-def delete_shopuser(request, pk):
+class DeleteShopuser(View):
 
-    shop_user = get_user_model().objects.get(id = pk)
+    """
+		Shopuser delete View
+	"""
+
     template_name =  "account/shopuser_delete." + app_settings.TEMPLATE_EXTENSION
 
-    if request.method == "POST":
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
 
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+
+        pk = kwargs["pk"]
+        shop_user = get_user_model().objects.get(id = pk)
+
+        form = ModalForm
+        return render(request, self.template_name, {
+            'form': form,
+            'shop_user': shop_user,
+        })
+
+    def post(self, request, *args, **kwargs):
+
+        pk = kwargs["pk"]
+        shop_user = get_user_model().objects.get(id = pk)
         shop_user.delete()
 
         return HttpResponse(
@@ -130,31 +204,45 @@ def delete_shopuser(request, pk):
                     "showMessage":  "shop user deleted."
                 })
             })
-    
-    else:
-        form = ModalForm
-    return render(request, template_name, {
-        'form': form,
-        'shop_user': shop_user,
-    })
 
-def shopuser_add(request):
 
-    from .forms import ShopuserAddForm
+class AddShopuser(View):
+
+    """
+		Shopuser Add View
+	"""
 
     template_name =  "account/shopuser_add." + app_settings.TEMPLATE_EXTENSION
     template_name_success =  "account/shopuser_add_success." + app_settings.TEMPLATE_EXTENSION
 
-    if request.method == "POST":
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+
+        form = ShopuserAddForm()
+
+        return render(request, self.template_name, {
+        'form': form,'errors':'',
+        })
+
+    def post(self, request, *args, **kwargs):
+
         form = ShopuserAddForm(request.POST)
+
         if form.is_valid():
             shopuser = form.save()
-            return render(request, template_name_success)
-    else:
+            return render(request, self.template_name_success)
+
+        errors = form.errors
+
         form = ShopuserAddForm()
-    return render(request, template_name, {
-        'form': form,
-    })
+    
+        return render(request, self.template_name, {
+        'form': form, 'errors':errors
+        })
 
 
 class EditProfileCustomer(generic.UpdateView):
@@ -173,16 +261,30 @@ class EditProfileShopuser(generic.UpdateView):
     success_url = '/account/profile'
 
 
-def profile(request):
+class Profile(View):
 
+    """
+		Profile View
+	"""
+
+    template_name =  'account/profile.html'
     
-    id = request.GET.get('id')
-    if id:
-        user = get_user_model().objects.get(id = id)
-    else:
-        user = request.user
 
-    return render(request, 'account/profile.html', {'user':user,})
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+
+        id = request.GET.get('id')
+
+        if id:
+            user = get_user_model().objects.get(id = id)
+        else:
+            user = request.user
+
+        return render(request, self.template_name, {'user':user,})
 
     
 

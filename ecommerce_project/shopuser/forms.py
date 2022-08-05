@@ -16,6 +16,10 @@ class ProductUpdateForm(forms.ModelForm):
 
     class Meta:
 
+        """
+           meta class
+        """
+
         model = Product
         exclude = ('shopuser',)
 
@@ -28,8 +32,9 @@ class ProductAttributeForm(forms.ModelForm):
 
     class Meta:
 
+        """
+           meta class
+        """
+
         model = ProductAttribute
         exclude = ('product',)
-    
-     
-	    

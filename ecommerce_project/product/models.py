@@ -2,7 +2,6 @@
     product models
 """
 
-from unicodedata import category
 from django.utils.html import mark_safe
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -26,6 +25,10 @@ class Category(models.Model):
     title = models.CharField(max_length = 100)
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '1. Categories'
 
     def __str__(self):
@@ -42,6 +45,10 @@ class Brand(models.Model):
     title = models.CharField(max_length = 100)
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '2. Brands'
 
     def __str__(self):
@@ -59,10 +66,16 @@ class Color(models.Model):
     color_code = models.CharField(max_length = 100)
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '3. Colors'
 
     def color_bg(self):
-        return mark_safe( f'<div style="width:30px; height:30px; background-color:{self.color_code}"></div>' )
+        return mark_safe(
+            f'<div style="width:30px; height:30px; background-color:{self.color_code}"></div>'
+            )
 
     def __str__(self):
         return self.title
@@ -78,6 +91,10 @@ class Material(models.Model):
     title = models.CharField(max_length = 100)
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '4. Materials'
 
     def __str__(self):
@@ -91,7 +108,7 @@ class Product(models.Model):
         Product Model
     """
 
-    user_model = get_user_model() 
+    user_model = get_user_model()
 
     title = models.CharField(max_length = 200)
     shopuser = models.ForeignKey(user_model, on_delete = models.CASCADE)
@@ -102,6 +119,10 @@ class Product(models.Model):
     sold = models.BooleanField(default = False)
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '5. Products'
 
     def __str__(self):
@@ -123,6 +144,10 @@ class ProductAttribute(models.Model):
     image = models.ImageField(upload_to="product_imgs/", null = True)
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '6. ProductAttributes'
 
     def __str__(self):
@@ -145,6 +170,10 @@ class Cart(models.Model):
     product = models.ForeignKey(Product,on_delete = models.CASCADE)
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '7. Carts'
 
 
@@ -162,6 +191,10 @@ class Wishlist(models.Model):
 
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '8. Wishlists'
 
 # Order
@@ -180,6 +213,10 @@ class Order(models.Model):
     total_amount = models.BigIntegerField(default=0)
 
     class Meta:
+
+        """
+            meta
+        """
         verbose_name_plural = '9. Orders'
 
 

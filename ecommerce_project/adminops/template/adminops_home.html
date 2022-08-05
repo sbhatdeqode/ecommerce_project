@@ -7,7 +7,7 @@
 
 	<h3 class="my-4 border-bottom pb-1">Admin Portal
 		<span class="float-right">
-			To approve/reject shopuser regestration  <a href="{% url 'shopuser_crud' %} "> <button class="btn btn-sm btn-primary" >CLICK</button> </a> here.
+			To approve/reject shopuser regestration  <a href="{% url 'shopuser_list_approval' %} "> <button class="btn btn-sm btn-primary" >CLICK</button> </a> here.
            
         </span>
 	</h3>
@@ -20,9 +20,11 @@
         </span>
 	</h5>
 	<table class="table" id = "myTable">
+		
+	  <div>
 		<thead>
 		  <tr>
-
+			
 			<th scope="col"> # </th>
 			<th scope="col"> Shopuser Id </th>
 			<th scope="col"> Shopuser Email </th>
@@ -30,9 +32,10 @@
 			<th scope="col"> Products </th>
 			<th scope="col"> Order list </th>
 			<th scope="col"> Sales Report </th>
-		
+			
 		  </tr>
 		</thead>
+	  </div>
 		<tbody>
 			{% for shopuser in shopusers %}
 		  <tr>
@@ -69,16 +72,16 @@
     
 	<h5 class="my-4 border-bottom pb-1">Customer List</h5>
     <br>
-	<table class="table" id = "myTable">
+	<table class="table" id = "myTableCust">
 		<thead>
 		  <tr>
-
+            <div>
 			<th scope="col"> # </th>
 			<th scope="col"> Customer Id </th>
 			<th scope="col"> Customer Email </th>
 			<th scope="col"> Detail </th>
 			<th scope="col"> Order list </th>
-		
+		</div>
 		  </tr>
 		</thead>
 		<tbody>
@@ -133,6 +136,13 @@
 <script>
     $(document).ready( function () {
     $('#myTable').DataTable();
+} );
+  
+
+</script>
+<script>
+    $(document).ready( function () {
+    $('#myTableCust').DataTable({"bSort": true,});
 } );
   
 

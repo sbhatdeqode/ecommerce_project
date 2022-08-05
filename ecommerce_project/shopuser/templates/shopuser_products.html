@@ -6,6 +6,7 @@
     {% if request.user.user_type == '1' or  request.user.user_type == '2' %}
 	
     <div class="row">
+		{% if request.user.user_type == '2' %}
 		<div class="col-md-3">
 			<h3 class="mb-4  border-bottom pb-1">
 				Order Details
@@ -22,6 +23,7 @@
 				</div>
 			</div>
 		</div>
+		{% endif %}
 		<div class="col-md-9">
 			<!-- Products -->
 			<h3 class="mb-4 border-bottom pb-1">
