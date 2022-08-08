@@ -5,7 +5,7 @@
 from django.shortcuts import render
 from django.http import  JsonResponse
 from django.template.loader import render_to_string
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
@@ -95,7 +95,7 @@ class FilterData(View):
 		colors = request.GET.getlist('color[]')
 		categories = request.GET.getlist('category[]')
 		brands = request.GET.getlist('brand[]')
-		sizes = request.GET.getlist('size[]')
+		mats = request.GET.getlist('mat[]')
 		price = request.GET.get('price')
 
 		all_products = Product.objects.filter(published = True).order_by('-id').distinct()
@@ -127,8 +127,8 @@ class FilterData(View):
 		if len(brands)>0:
 			all_products = all_products.filter(brand__id__in = brands).distinct()
 
-		if len(sizes)>0:
-			all_products = all_products.filter(productattribute__size__id__in = sizes).distinct()
+		if len(mats)>0:
+			all_products = all_products.filter(productattribute__material__id__in = mats).distinct()
 
 		paginator = Paginator(all_products, 6)
 		page = request.GET.get('page')
@@ -196,19 +196,19 @@ class CartList(View):
 			get method
 		"""
 
-		if request.user.is_authenticated:
-			cart = Cart.objects.filter(customer = request.user)
-			total_amount = 0
+		
+		cart = Cart.objects.filter(customer = request.user)
+		total_amount = 0
 
-			if cart:
-				for c in cart:
+		if cart:
+			for c in cart:
 
-					p_at = ProductAttribute.objects.get(product = c.product)
-					total_amount += p_at.price
+				p_at = ProductAttribute.objects.get(product = c.product)
+				total_amount += p_at.price
 
-			return render(request, 'cart.html', {'total_amount': total_amount})
+		return render(request, 'cart.html', {'total_amount': total_amount})
 
-		return redirect('/account/login/')
+		
 
 
 # Cart Delete
@@ -229,10 +229,12 @@ class CartDelete(View):
 			get method
 		"""
 
-		product_id = request.GET['id']
+		product_id = request.GET.get('id')
 
 		cart_d = Cart.objects.filter(product__id = product_id, customer = request.user).first()
-		cart_d.delete()
+
+		if cart_d:
+			cart_d.delete()
 
 		cart_products = Cart.objects.filter(customer = request.user)
 		cart = Cart.objects.filter(customer = request.user)
@@ -271,7 +273,7 @@ class WishlistAdd(View):
 			get method
 		"""
 
-		product_id = int(request.GET['product_id'])
+		product_id = request.GET.get('product_id')
 
 		customer = request.user
 		product = Product.objects.get(id = product_id)
@@ -310,13 +312,11 @@ class WishlistList(View):
 			get method
 		"""
 
-		if request.user.is_authenticated:
+		wishlist_products = Wishlist.objects.filter(customer = request.user)
 
-			wishlist_products = Wishlist.objects.filter(customer = request.user)
+		return render(request, 'wishlist.html', {'wishlist_products':wishlist_products})
 
-			return render(request, 'wishlist.html',{'wishlist_products':wishlist_products})
-
-		return redirect('/admin/login/')
+		
 
 
 # wishlist Delete
@@ -337,10 +337,12 @@ class WishlistDelete(View):
 			get method
 		"""
 
-		product_id = request.GET['id']
+		product_id = request.GET.get('id')
 
 		wish_d = Wishlist.objects.filter(product__id = product_id, customer = request.user).first()
-		wish_d.delete()
+
+		if wish_d:
+			wish_d.delete()
 
 		wishlist_products = Wishlist.objects.filter(customer = request.user)
 
@@ -381,16 +383,17 @@ class PlaceOrder(View):
 
 		total_amount = 0
 
-		for c in cart:
+		if cart :
+			for c in cart:
 
-			p_at = ProductAttribute.objects.get(product = c.product)
-			total_amount += p_at.price
-			c.product.sold = True
-			c.product.save()
-			order.products.add(c.product)
-			c.delete()
-			wishlist = Wishlist.objects.filter(customer = customer, product =c.product)
-			wishlist.delete()
+				p_at = ProductAttribute.objects.get(product = c.product)
+				total_amount += p_at.price
+				c.product.sold = True
+				c.product.save()
+				order.products.add(c.product)
+				c.delete()
+				wishlist = Wishlist.objects.filter(customer = customer, product =c.product)
+				wishlist.delete()
 
 		order.total_amount = total_amount
 		order.save()
@@ -418,7 +421,7 @@ class BuyNow(View):
 
 		customer = request.user
 
-		p_id = request.GET['pid']
+		p_id = request.GET.get('pid')
 
 		product = Product.objects.get(id = p_id)
 
@@ -498,12 +501,14 @@ class OrderCancel(View):
 			get method
 		"""
 
-		order_id = request.GET['order_id']
+		order_id = request.GET.get('order_id')
 
-		order = Order.objects.get(id = str(order_id) )
+		order = get_object_or_404(Order, id = order_id)
 
-		order.cancelled = True
-		order.save()
+		if order :
+
+			order.cancelled = True
+			order.save()
 
 		customer = request.user
 
