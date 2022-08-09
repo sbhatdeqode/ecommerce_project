@@ -13,6 +13,6 @@ urlpatterns = [
     path("product_delete/", views.ProductDelete.as_view(), name = "product_delete"),
     path("product_add/", views.ProductAdd.as_view(), name = "product_add"),
     path("shopuser_order_list/", views.ShopuserOrderList.as_view(), name = "shopuser_order_list"),
-     path("shopuser_order_percentage/", views.ShopuserOrderPercentage.as_view(), name = "shopuser_order_percentage"),
+    path("shopuser_order_percentage/", views.ShopuserOrderPercentage.as_view(), name = "shopuser_order_percentage"),
 
 ]

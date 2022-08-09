@@ -6,7 +6,7 @@
 	<!-- Featured Products -->
 	<h3 class="my-4 border-bottom pb-1">Add Product</h3>
 	<table class="table table-bordered">
-		<form method="post">
+		<form method="post" enctype="multipart/form-data">
 			{% csrf_token %}
             <input type="hidden" name="shopuser" value="{{ request.user}}">
 			{{form_pro.as_table}}

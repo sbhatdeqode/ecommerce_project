@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.views import View
 from django.utils.decorators import method_decorator
 
-from .forms import ProductAttributeForm, ProductUpdateForm
+from .forms import ProductAttributeAddForm, ProductAddForm, ProductUpdateForm, ProductAttributeUpdateForm
 
 
 Product = apps.get_model('product', 'Product')
@@ -132,11 +132,12 @@ class ProductUupdate(View):
         product = Product.objects.get(shopuser = shopuser, id = p_id)
         p_pa = ProductAttribute.objects.filter(product = product).first()
 
-        form_at = ProductAttributeForm(instance = p_pa)
+        form_at = ProductAttributeUpdateForm(instance = p_pa)
         form_pro = ProductUpdateForm(instance = product)
 
         return render(request, 'product_update.html', {'form_at':form_at, 'form_pro':form_pro})
 
+    
     def post(self, request):
 
         """
@@ -146,37 +147,31 @@ class ProductUupdate(View):
         shopuser = request.user
         p_id = request.GET.get('p_id')
 
+        if not p_id:
+
+            p_id = request.POST.get('p_id')
+
         product = Product.objects.get(shopuser = shopuser, id = p_id)
         p_pa = ProductAttribute.objects.filter(product = product).first()
 
-        form_pro = ProductUpdateForm(request.POST)
-        form_at =  ProductAttributeForm(request.POST)
+        form_pro = ProductUpdateForm(request.POST, instance = product)
+        form_at =  ProductAttributeUpdateForm(request.POST, request.FILES, instance = p_pa)
 
-        brand = Brand.objects.get(id = form_pro.data.get('brand'))
-        cat = Category.objects.get(id = form_pro.data.get('category'))
+        if form_pro.is_valid() and form_at.is_valid():
 
-        product.title = form_pro.data.get('title')
-        product.detail = form_pro.data.get('detail')
-        product.category = cat
-        product.brand = brand
+            form_pro.save()
+    
+            form_at.save()
 
-        if form_pro.data.get('published') == 'on':
-            product.published = True
-        else:
-            product.published = False
+            return render(request, 'product_update_success.html')
 
-        product.save()
+        form_at_errors = form_at.errors
+        form_pro_errors = form_pro.errors
 
-        material = Material.objects.get(id = form_at.data.get('material'))
-        color = Color.objects.get(id = form_at.data.get('color'))
-
-        p_pa.color = color
-        p_pa.material = material
-        p_pa.image = 'product_imgs/'+form_at.data.get('image')
-
-        p_pa.save()
-
-        return render(request, 'product_update_success.html')
+        return render(request, 'product_update.html', {
+            'form_at':form_at, 'form_pro':form_pro,
+             'form_at_errors': form_at_errors, 'form_pro_errors':form_pro_errors
+             })
 
 
 # Produc Delete
@@ -231,43 +226,23 @@ class ProductAdd(View):
 
         shopuser = request.user
 
-        form_pro = ProductUpdateForm(request.POST)
-        form_at =  ProductAttributeForm(request.POST)
+        form_pro = ProductAddForm(request.POST)
+        form_at =  ProductAttributeAddForm(request.POST, request.FILES)
 
-        brand = Brand.objects.get(id = form_pro.data.get('brand'))
-        cat = Category.objects.get(id = form_pro.data.get('category'))
+        if form_pro.is_valid and form_at.is_valid:
 
-        title = form_pro.data.get('title')
-        detail = form_pro.data.get('detail')
-        rating = form_pro.data.get('rating')
+            product = form_pro.save(request = request)
 
-        product = Product(
-                        brand = brand, category = cat,
-                        title = title, detail = detail,
-                        shopuser = shopuser,
-                        )
+            form_at.save(request = request, product = product)
 
-        if form_pro.data.get('published') == 'on':
-            product.published = True
-        else:
-            product.published = False
+            return render(request, 'product_update_success.html')
 
-        product.save()
+        errors = form_pro.errors
 
-        p_pa = ProductAttribute(product = product)
+        form_at = ProductAttributeAddForm()
+        form_pro = ProductAddForm()
 
-        material = Material.objects.get(id = form_at.data.get('material'))
-        color = Color.objects.get(id = form_at.data.get('color'))
-
-        p_pa.price = form_at.data.get('price')
-        p_pa.color = color
-        p_pa.rating = rating
-        p_pa.material = material
-        p_pa.image = 'product_imgs/'+form_at.data.get('image')
-
-        p_pa.save()
-
-        return render(request, 'product_update_success.html')
+        return render(request, 'product_add.html', {'form_at':form_at, 'form_pro':form_pro, 'errors':errors})
 
     def get(self, request):
 
@@ -275,10 +250,12 @@ class ProductAdd(View):
 		    get request
         """
 
-        form_at = ProductAttributeForm()
-        form_pro = ProductUpdateForm()
+        form_at = ProductAttributeAddForm()
+        form_pro = ProductAddForm()
 
-        return render(request, 'product_add.html', {'form_at':form_at, 'form_pro':form_pro})
+        errors = ''
+
+        return render(request, 'product_add.html', {'form_at':form_at, 'form_pro':form_pro, 'errors':errors})
 
 
 # shopuser_order_list

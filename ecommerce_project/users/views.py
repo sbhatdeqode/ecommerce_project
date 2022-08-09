@@ -277,6 +277,8 @@ class Profile(View):
 
     def get(self, request, *args, **kwargs):
 
+        #print(request.META.get('HTTP_REFERER')[-2:-14:-1][::-1])
+
         id = request.GET.get('id')
 
         if id:

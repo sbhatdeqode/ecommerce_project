@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.apps import apps
 
+from .forms import ProductAddForm
+
 # Create your tests here.
 
 class ShopUserTest(TestCase):
@@ -69,7 +71,7 @@ class ShopUserTest(TestCase):
         cls.p_at = p_at
 
 
-    def test_shop_uder_product_list(self):
+    def test_shop_user_product_list(self):
 
         self.client.force_login(self.shopuser)
 
@@ -82,5 +84,124 @@ class ShopUserTest(TestCase):
         self.assertContains(response, 'Shopuser Portal')
 
 
+    def test_shop_user_product_publish_unpublish(self):
 
+        self.client.force_login(self.shopuser)
+
+        response = self.client.get(reverse('publish_unpublish'),{'product_id': self.product.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ajax/shopuser_products.html')
+        self.assertNotContains(response, 'Admin Portal')
+        self.assertNotContains(response, 'Customer Portal')
+
+    def test_shop_user_product_publish_unpublish(self):
+
+        self.client.force_login(self.shopuser)
+
+        response = self.client.get(reverse('publish_unpublish'),{'product_id': self.product.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ajax/shopuser_products.html')
+        self.assertNotContains(response, 'Admin Portal')
+        self.assertNotContains(response, 'Customer Portal')
+
+
+    def test_shop_user_product_delete(self):
+
+        self.client.force_login(self.shopuser)
+
+        response = self.client.get(reverse('product_delete'),{'product_id': self.product.id})
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ajax/shopuser_products.html')
+        self.assertNotContains(response, 'Admin Portal')
+        self.assertNotContains(response, 'Customer Portal')
+
+
+    def test_shop_user_product_add(self):
+
+        form_data = {
+            'brand': self.brand.id, 
+            'category': self.cat.id,
+            'title':self.product.title,
+            'detail':self.product.detail,
+            'rating':5,
+            'material':self.mat.id,
+            'color':self.color.id,
+            'price':self.p_at.price,
+            'image':'4.jag',
+            }
+
+        form_pro_data = {
+            'brand': 100, 
+            'category': self.cat.id,
+            'title':self.product.title,
+            'detail':self.product.detail,
+        }
+
+        form_pro = ProductAddForm(form_pro_data)
+
+        self.assertFalse(form_pro.is_valid())
+
+        self.client.force_login(self.shopuser)
+
+        response = self.client.get(reverse('product_add'),)
+
+        response_post = self.client.post(reverse('product_add'), form_data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'product_add.html')
+
+        self.assertEqual(response_post.status_code, 200)
+        self.assertTemplateUsed(response_post, 'product_update_success.html')
+
+
+    def test_shop_user_product_update(self):
+
+        form_data = {
+            'p_id': self.product.id,
+            'shopuser':self.shopuser,
+            'brand': self.brand.id, 
+            'category': self.cat.id,
+            'title':self.product.title,
+            'detail':self.product.detail,
+            'rating':5,
+            'material':self.mat.id,
+            'color':self.color.id,
+            'price':self.p_at.price,
+            'image':'4.jpg',
+            }
+
+        self.client.force_login(self.shopuser)
+
+        response = self.client.get(reverse('product_update'), {'p_id': self.product.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'product_update.html')
+
+        response_post = self.client.post(reverse('product_update'), form_data,)
+
+        self.assertEqual(response_post.status_code, 200)
+        self.assertContains(response_post, "This field is required")
+
+
+    def test_shop_user_order_list(self):
+
+        self.client.force_login(self.shopuser)
+
+        response = self.client.get(reverse('shopuser_order_list'),)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'shopuser_orders.html')
+
+
+    def test_shop_user_order_percentage(self):
+
+        self.client.force_login(self.shopuser)
+
+        response = self.client.get(reverse('shopuser_order_percentage'),)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'shopuser_order_percetage.html')
 
