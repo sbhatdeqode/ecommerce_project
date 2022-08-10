@@ -2,7 +2,7 @@
     user models module
 """
 
-from datetime import datetime
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
@@ -61,10 +61,10 @@ class MyUser(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    username = models.CharField(max_length = 20,default = '')
-    dob = models.DateField(default = datetime.now().date(), blank = True)
-    gender = models.CharField(max_length = 10, default='')
-    adress = models.TextField(default='')
+    username = models.CharField(max_length = 20, default = '')
+    dob = models.DateField(default = timezone.now, blank = True)
+    gender = models.CharField(max_length = 10, default='', blank = True)
+    adress = models.TextField(default='', blank = True)
     shop_name = models.CharField(max_length=100, blank = True, default='')
     shop_type = models.CharField(max_length=100, blank = True, default='')
 

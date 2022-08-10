@@ -1,3 +1,7 @@
+"""
+    Shopuser test module
+"""
+
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth import get_user_model
@@ -11,13 +15,15 @@ from .forms import ProductAddForm
 class ShopUserTest(TestCase):
 
     """
-        Product List test class
+        Shopuser test class
     """
-    
+
     @classmethod
     def setUpTestData(cls):
 
-        # Setup run.
+        """
+            set up run
+        """
 
         Product = apps.get_model('product', 'Product')
         ProductAttribute = apps.get_model('product', 'ProductAttribute')
@@ -25,12 +31,11 @@ class ShopUserTest(TestCase):
         Category = apps.get_model('product', 'Category')
         Color = apps.get_model('product', 'Color')
         Material = apps.get_model('product', 'Material')
-        Order = apps.get_model('product', 'Order')
-        ProductSalesBrand = apps.get_model('product', 'ProductSalesBrand')
-        ProductSalesCat = apps.get_model('product', 'ProductSalesCat')
 
         cls.client = Client()
-        shopuser = get_user_model().objects.create(username='test_user1', email='test_user1@test.com')
+        shopuser = get_user_model().objects.create(
+            username='test_user1', email='test_user1@test.com'
+            )
         shopuser.user_type = '2'
         shopuser.is_active = True
         shopuser.save()
@@ -73,6 +78,10 @@ class ShopUserTest(TestCase):
 
     def test_shop_user_product_list(self):
 
+        """
+            shop_user_product_list view test
+        """
+
         self.client.force_login(self.shopuser)
 
         response = self.client.get(reverse('shopuser_products'))
@@ -86,16 +95,9 @@ class ShopUserTest(TestCase):
 
     def test_shop_user_product_publish_unpublish(self):
 
-        self.client.force_login(self.shopuser)
-
-        response = self.client.get(reverse('publish_unpublish'),{'product_id': self.product.id})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'ajax/shopuser_products.html')
-        self.assertNotContains(response, 'Admin Portal')
-        self.assertNotContains(response, 'Customer Portal')
-
-    def test_shop_user_product_publish_unpublish(self):
+        """
+            shop_user_product_publish_unpublish view test
+        """
 
         self.client.force_login(self.shopuser)
 
@@ -109,10 +111,14 @@ class ShopUserTest(TestCase):
 
     def test_shop_user_product_delete(self):
 
+        """
+            shop_user_product_delete view test
+        """
+
         self.client.force_login(self.shopuser)
 
         response = self.client.get(reverse('product_delete'),{'product_id': self.product.id})
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'ajax/shopuser_products.html')
         self.assertNotContains(response, 'Admin Portal')
@@ -121,8 +127,12 @@ class ShopUserTest(TestCase):
 
     def test_shop_user_product_add(self):
 
+        """
+            shop_user_product_add view test
+        """
+
         form_data = {
-            'brand': self.brand.id, 
+            'brand': self.brand.id,
             'category': self.cat.id,
             'title':self.product.title,
             'detail':self.product.detail,
@@ -134,7 +144,7 @@ class ShopUserTest(TestCase):
             }
 
         form_pro_data = {
-            'brand': 100, 
+            'brand': 100,
             'category': self.cat.id,
             'title':self.product.title,
             'detail':self.product.detail,
@@ -159,10 +169,14 @@ class ShopUserTest(TestCase):
 
     def test_shop_user_product_update(self):
 
+        """
+            shop_user_product_update view test
+        """
+
         form_data = {
             'p_id': self.product.id,
             'shopuser':self.shopuser,
-            'brand': self.brand.id, 
+            'brand': self.brand.id,
             'category': self.cat.id,
             'title':self.product.title,
             'detail':self.product.detail,
@@ -188,6 +202,10 @@ class ShopUserTest(TestCase):
 
     def test_shop_user_order_list(self):
 
+        """
+            shop_user_order_list view test
+        """
+
         self.client.force_login(self.shopuser)
 
         response = self.client.get(reverse('shopuser_order_list'),)
@@ -198,10 +216,13 @@ class ShopUserTest(TestCase):
 
     def test_shop_user_order_percentage(self):
 
+        """
+            shop_user_order_percentage view test
+        """
+
         self.client.force_login(self.shopuser)
 
         response = self.client.get(reverse('shopuser_order_percentage'),)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'shopuser_order_percetage.html')
-

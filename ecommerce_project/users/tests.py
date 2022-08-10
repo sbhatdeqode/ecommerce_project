@@ -1,3 +1,6 @@
+"""
+    users test module
+"""
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth import get_user_model
@@ -6,14 +9,18 @@ from django.urls import reverse
 from .forms import ShopuserAddForm
 # Create your tests here.
 
-class ShopUserTest(TestCase):
+class UsersTest(TestCase):
 
     """
-        Product List test class
+        users test class
     """
-    
+
     @classmethod
     def setUpTestData(cls):
+
+        """
+            Setup run.
+        """
 
         cls.client = Client()
         admin = get_user_model().objects.create(username='test_user1', email='test_user1@test.com')
@@ -23,7 +30,9 @@ class ShopUserTest(TestCase):
 
         cls.admin = admin
 
-        shopuser = get_user_model().objects.create(username='test_user2', email='test_user2@test.com')
+        shopuser = get_user_model().objects.create(
+            username='test_user2', email='test_user2@test.com'
+            )
         shopuser.user_type = '2'
         shopuser.is_active = True
         shopuser.save()
@@ -32,6 +41,10 @@ class ShopUserTest(TestCase):
 
     def test_shop_user_signup(self):
 
+        """
+            test shop user signup viw
+        """
+
         response = self.client.get(reverse('account_shopuser_signup'))
 
         self.assertEqual(response.status_code, 200)
@@ -39,6 +52,10 @@ class ShopUserTest(TestCase):
 
 
     def test_shopuser_list(self):
+
+        """
+            test shop user list viw
+        """
 
         self.client.force_login(self.admin)
 
@@ -50,12 +67,20 @@ class ShopUserTest(TestCase):
 
     def test_shopuser_detail(self):
 
+        """
+            test shop user detail viw
+        """
+
         response = self.client.get(reverse('shopuser_details', kwargs={'user_id':self.shopuser.id}))
 
         self.assertEqual(response.status_code, 302)
 
 
     def test_shopuser_update(self):
+
+        """
+            test shop user update viw
+        """
 
         data = {'shop_type': 'electronics', 'shop_name':'croma'}
 
@@ -77,6 +102,10 @@ class ShopUserTest(TestCase):
 
     def test_shopuser_crud(self):
 
+        """
+            test shop user crud viw
+        """
+
         self.client.force_login(self.admin)
         response = self.client.get(reverse('shopuser_crud',))
         self.assertEqual(response.status_code, 200)
@@ -84,6 +113,10 @@ class ShopUserTest(TestCase):
 
 
     def test_shopuser_delete(self):
+
+        """
+            test shop user delete viw
+        """
 
         self.client.force_login(self.admin)
 
@@ -100,6 +133,10 @@ class ShopUserTest(TestCase):
         self.assertEqual(response_post.status_code, 204)
 
     def test_shopuser_add(self):
+
+        """
+            test shop user add viw
+        """
 
         shopuser_data = {
             'username':'test_user2', 'email':'test_user2@test.com',
@@ -118,8 +155,12 @@ class ShopUserTest(TestCase):
 
         self.assertFalse(form.is_valid())
 
-    
+
     def test_shopuser_edit_profile(self):
+
+        """
+            test shop user edit viw
+        """
 
         shopuser_data = {
             'username':'test_user3', 'email':'test_user3@test.com',
@@ -144,15 +185,13 @@ class ShopUserTest(TestCase):
 
     def test_profile(self):
 
+        """
+            test profile viw
+        """
+
         self.client.force_login(self.admin)
 
         response = self.client.get(reverse('profile'))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'account/profile.html')
-
-
-
-        
-
-        

@@ -38,18 +38,27 @@ for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
 {% endif %}
 
 <br>
+<table class="table table-bordered">
 <form class="login" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
-  {{ form.as_p }}
+  {{ form.as_table }}
   <br>
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
   
+  <tr>
+    <td colspan="2">
   <button class="btn btn-primary" type="submit">{% trans "Sign In" %}</button>
+
+    </td>
+  </tr>
   <br>
-  <a class="button secondaryAction" href="{% url 'account_reset_password' %}"><h5>FORGOT PASSWORD?</h5></a>
 
 </form>
+
+</table>
+
+<a class="button secondaryAction" href="{% url 'account_reset_password' %}"><h5>FORGOT PASSWORD?</h5></a>
 </main>
 {% endblock %}

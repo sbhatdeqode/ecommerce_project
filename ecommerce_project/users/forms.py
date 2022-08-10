@@ -21,7 +21,7 @@ class CustomSignupForm(SignupForm):
     """
 
     dob = forms.DateField(label='Date Of Birth',
-     input_formats = ['%m/%d/%Y', ],
+     input_formats = ['%d/%m/%Y', ],
      )
 
     gender=forms.CharField(
