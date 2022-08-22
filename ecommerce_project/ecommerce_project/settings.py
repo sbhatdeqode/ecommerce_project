@@ -29,9 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-1s+wq^o&j&)%lts1p4&^5ne!$f(rbwsn%e)vyph_!6yiv)bl90'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -189,7 +189,7 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 
 LOGIN_REDIRECT_URL = '/'
 
-ACCOUNT_SIGNUP_REDIRECT_URL = "/account/login/"
+ACCOUNT_SIGNUP_REDIRECT_URL = "/accounts/login/"
 ACCOUNT_FORMS = {
 'signup': 'users.forms.CustomSignupForm',
 }

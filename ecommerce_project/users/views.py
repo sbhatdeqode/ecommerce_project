@@ -10,10 +10,10 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import HttpResponse
 
-from .forms import ModalForm, ShopuserAddForm
+from .forms import ModalForm, ShopuserAddForm, CustomSignupForm
 
 
-class ShopUserSignupView(views.SignupView):
+class ShopUserSignupView(View):
 
     """
 		Shopuser Signup View
@@ -21,7 +21,26 @@ class ShopUserSignupView(views.SignupView):
 
     template_name = "account/shop_user_signup." + app_settings.TEMPLATE_EXTENSION
 
+    def get(self, request, *args, **kwargs):
+
+        form = CustomSignupForm
+        return render(request, self.template_name, {'form':form})
+
+    def post(self, request):
+
+        form = CustomSignupForm(request.POST)
+
+        if form.is_valid():
+
+            user = form.save(request = request)
+            return render(request, 'account/account_inactive.html',)
+
+        return render(request, self.template_name, {'form':form})
+
+        
+
 signup = ShopUserSignupView.as_view()
+
 
 class ShopUserListView(ListView):
 

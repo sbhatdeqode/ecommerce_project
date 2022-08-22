@@ -5,6 +5,7 @@
 from allauth.account.forms import SignupForm
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.admin.widgets import AdminDateWidget
 
 USER_TYPE_CHOICES =(
     ("1", "Admin"),
@@ -20,38 +21,38 @@ class CustomSignupForm(SignupForm):
         custom signup form
     """
 
-    dob = forms.DateField(label='Date Of Birth',
-     input_formats = ['%d/%m/%Y', ],
+    dob = forms.DateField(label = 'Date Of Birth',
+            widget = forms.widgets.DateInput(attrs={'type': 'date'})
      )
 
-    gender=forms.CharField(
-        label=("Gender"),
-        widget=forms.TextInput(
-            attrs={ "placeholder":("Gender")})
+    gender = forms.CharField(
+        label = ("Gender"),
+        widget = forms.TextInput(
+            attrs = { "placeholder":("Gender")})
     )
 
-    adress=forms.CharField(
-        label=("Adress"),
-        widget=forms.TextInput(
-            attrs={ "placeholder":("Adress")})
+    adress = forms.CharField(
+        label = ("Adress"),
+        widget = forms.TextInput(
+            attrs = { "placeholder":("Adress")})
     )
 
     shop_type =  forms.CharField(
-        label=("Shop Type"),
-        widget=forms.TextInput(
-            attrs={ "placeholder":("Shop Type")})
+        label = ("Shop Type"),
+        widget = forms.TextInput(
+            attrs = { "placeholder":("Shop Type")})
     )
 
     user_type =  forms.CharField(
-        label=("User Type"),
-        widget=forms.TextInput(
-            attrs={ "placeholder":("User Type")})
+        label = ("User Type"),
+        widget = forms.TextInput(
+            attrs = { "placeholder":("User Type")})
     )
 
     shop_name =  forms.CharField(
-        label=("Shop Name"),
-        widget=forms.TextInput(
-            attrs={ "placeholder":("Shop Name")})
+        label = ("Shop Name"),
+        widget = forms.TextInput(
+            attrs = { "placeholder":("Shop Name")})
     )
 
 
@@ -100,3 +101,7 @@ class ShopuserAddForm(forms.ModelForm):
         model = get_user_model()
         fields = ['email', 'username', 'dob', 'user_type',
          'adress', 'gender', 'shop_name', 'shop_type',]
+
+        widgets = {
+            'dob': forms.widgets.DateInput(attrs={'type': 'date'}),
+        }

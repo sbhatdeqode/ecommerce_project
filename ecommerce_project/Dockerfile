@@ -6,8 +6,8 @@ WORKDIR /app
 
 ADD . /app
 
-COPY ./requirements.txt /app/reqirements.txt
+COPY ./requirements.txt /app/requirements.txt
 
-RUN pip install -r reqirements.txt
+RUN pip install -r requirements.txt
 
 copy . /app
