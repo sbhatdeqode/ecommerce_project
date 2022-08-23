@@ -1,0 +1,153 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+<main class="container my-4" id="cartList">
+    <br><br>
+    {% if request.user.user_type == '1' %}
+
+	<h3 class="my-4 border-bottom pb-1">Admin Portal
+		<span class="float-right">
+			To approve/reject shopuser regestration  <a href="{% url 'shopuser_list_approval' %} "> <button class="btn btn-sm btn-primary" >CLICK</button> </a> here.
+           
+        </span>
+	</h3>
+    <br><br>
+
+	<h5 class="my-4 border-bottom pb-1">Shopuser List
+		<span class="float-right">
+			To create, delete, or update shopuser click here.
+            <a href="{% url 'shopuser_crud' %} "> <button class="btn btn-sm btn-primary" >CRUD</button> </a>
+        </span>
+	</h5>
+	<table class="table" id = "myTable">
+		
+	  <div>
+		<thead>
+		  <tr>
+			
+			<th scope="col"> # </th>
+			<th scope="col"> Shopuser Id </th>
+			<th scope="col"> Shopuser Email </th>
+			<th scope="col"> Detail </th>
+			<th scope="col"> Products </th>
+			<th scope="col"> Order list </th>
+			<th scope="col"> Sales Report </th>
+			
+		  </tr>
+		</thead>
+	  </div>
+		<tbody>
+			{% for shopuser in shopusers %}
+		  <tr>
+			<th scope="row"> {{forloop.counter}} </th> 
+
+			<td class ="mail"> {{shopuser.id}} </td>
+
+			<td> {{shopuser.email}} </td>
+
+			<td>
+				<a href="{% url 'profile' %}?id={{shopuser.id}}"> <button class="btn btn-sm btn-primary " >Details</button> </a>
+			</td>
+		
+
+			<td>
+				 <a href="{% url 'shopuser_products' %}?s_id={{shopuser.id}}"> <button class="btn btn-sm btn-primary " >Products</button> </a>
+			</td>
+
+			<td>
+				<a href="{% url 'shopuser_order_list' %}?s_id={{shopuser.id}}"> <button class="btn btn-sm btn-primary " >Order List</button> </a>
+		    </td>
+
+		   <td>
+			<a href="{% url 'shopuser_order_percentage' %}?s_id={{shopuser.id}}"> <button class="btn btn-sm btn-primary " >Sales Report</button> </a>
+	   	   </td>
+			
+			
+			
+		  </tr>
+		  {% endfor %}
+		  
+		</tbody>
+	  </table><br><br>
+    
+	<h5 class="my-4 border-bottom pb-1">Customer List</h5>
+    <br>
+	<table class="table" id = "myTableCust">
+		<thead>
+		  <tr>
+            <div>
+			<th scope="col"> # </th>
+			<th scope="col"> Customer Id </th>
+			<th scope="col"> Customer Email </th>
+			<th scope="col"> Detail </th>
+			<th scope="col"> Order list </th>
+		</div>
+		  </tr>
+		</thead>
+		<tbody>
+			{% for customer in customers %}
+		  <tr>
+			<th scope="row"> {{forloop.counter}} </th> 
+
+			<td class ="mail"> {{customer.id}} </td>
+
+			<td> {{customer.email}} </td>
+
+			<td>
+				<a href="{% url 'profile' %}?id={{customer.id}}"> <button class="btn btn-sm btn-primary " >Details</button> </a>
+			</td>
+		
+
+			<td>
+				 <a href="{% url 'order_list' %}?c_id={{customer.id}}"> <button class="btn btn-sm btn-primary " >Order List</button> </a>
+			</td>
+			
+			
+			
+		  </tr>
+		  {% endfor %}
+		  
+		</tbody>
+	  </table><br>
+   
+    {% else %}
+     
+    <br>
+
+    <h3 class="my-4 pb-1">You are not autherized to see this page. Please login as Admin</h3>
+
+    {% endif %}
+    
+</main>
+
+{% endblock %}
+
+{% block extra_body %}
+   
+{% endblock %}
+
+{% block js %} 
+ 
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+ 
+<script>
+    $(document).ready( function () {
+    $('#myTable').DataTable();
+} );
+  
+
+</script>
+<script>
+    $(document).ready( function () {
+    $('#myTableCust').DataTable({"bSort": true,});
+} );
+  
+
+</script>
+
+
+ 
+{% endblock js %}

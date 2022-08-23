@@ -1,0 +1,17 @@
+{% extends "account/basex.html" %}
+
+{% block content %}
+{% if request.user.is_admin %}
+
+<br> <br>
+<p>  The shop <b>{{shopuser.shop_name}}</b> is <b>{{result}}</b> successfully.</p><br><br>
+
+<p> To see the shop users list  for approval please <a href="{% url 'shopuser_list_approval' %}"><b>CLICK</b></a> here.  </p> 
+
+{% else %}
+<p> You are not authorized to see this page. Please login as admin.</p>
+<br><br>
+
+{% endif %}
+
+{% endblock %}

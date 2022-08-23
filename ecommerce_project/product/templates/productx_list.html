@@ -1,0 +1,108 @@
+{% extends 'basex.html' %}
+{% load static %}
+{% block content %}
+
+<main class="container my-4">
+    {% if request.user.user_type == '3' %}
+	
+    <div class="row">
+		<!-- Filters -->
+		<div class="col-md-3">
+			{% include 'filters.html' %}
+		</div>
+		<div class="col-md-9">
+			<!-- Products -->
+			<h3 class="mb-4 border-bottom pb-1">
+				Products
+			</h3>
+			<div class="row" id="filteredProducts">
+				<p class="ajaxLoader">Loading...</p>
+				{% for product in datas %}
+				<div class="col-lg-4 col-md-6 mb-4 product-box">
+					<div class="card shadow">
+					  <a href="{% url 'product_detail'%}?p_id={{product.id}}"><img src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{product.title}}"></a>
+					  <div class="card-body">
+					    <h5 class="card-text"><a href="{% url 'product_detail'%}?p_id={{product.id}}">{{product.title}}</a></h5>
+					    <h6>Rs. <span class="product-price-{{product.id}}">{{product.productattribute_set.first.price}}</span></h6>
+					  </div>
+					  	<div class="card-footer">
+			
+				
+				          <input type="hidden" class="product-id-{{product.id}}" value="{{product.id}}" />
+				
+							  	<button class="btn btn-sm btn-primary add-to-cart" data-index="{{product.id}}"><i class="fa fa-shopping-cart"></i></button>
+							  	<button class="btn btn-sm btn-danger add-to-wishlist" data-index="{{product.id}}"><i class="fa fa-heart"></i></button>
+								  <a href="{% url 'buy_now' %}?pid={{product.id}}"><button class="btn btn-sm btn-primary" >Buy Now</button> </a>
+							  	<span class="float-right">
+							  		{{product.productattribute_set.first.get_rating_display}}/5
+							  		<i class="fa fa-star text-warning"></i>
+							  	</span>
+					  	</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+
+			<nav aria-label="...">
+				<ul class="pagination">
+                    
+					<li class="page-item ">
+						<a class="page-link" href="?page=1">First Page </a>
+					  </li>
+
+					{% if datas.has_previous %}
+				  <li class="page-item ">
+					<a class="page-link" href="?page={{datas.previous_page_number}}" tabindex="-1">Previous</a>
+				  </li>
+
+				  {% else %}
+				  <li class="page-item disabled">
+					<a class="page-link" href="" tabindex="-1">Previous</a>
+				  </li>
+				  {% endif %}
+
+				  <li class="page-item active">
+					<a class="page-link" href="#">Current <span class="sr-only"></span></a>
+				  </li>
+
+				  {% if datas.has_next %} 
+				  <li class="page-item">
+					<a class="page-link" href="?page={{datas.next_page_number}}">Next</a>
+				  </li>
+				  {% else %}
+				  <li class="page-item disabled">
+					<a class="page-link" href="" tabindex="-1">Next</a>
+				  </li>
+				  {% endif %}
+
+				  <li class="page-item ">
+					<a class="page-link" href="?page={{datas.paginator.num_pages}}">Last Page </a>
+				  </li>
+				</ul>
+			  </nav>
+			
+			  
+			
+			<!-- Empty toast to show the message -->
+				<div class="toast-container position-fixed top-0 end-0 p-3">
+					<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+					<div class="d-flex">
+						<div id="toast-body" class="toast-body"></div>
+						<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+					</div>
+					</div>
+				</div>
+		</div>
+	</div>
+    
+    		
+
+    {% else %}
+    <p> You are not authorized to see this page. Please login as customer.</p>
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block extra_body %}
+
+{% endblock %}

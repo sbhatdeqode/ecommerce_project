@@ -1,0 +1,67 @@
+{% load static %}
+<script type="text/javascript" src="{% static 'filters.js' %}"></script>
+			<h3 class="mb-4 border-bottom pb-1">Filters</h3>
+			<!-- Price Filter -->
+			<div class="card mb-4">
+				<h6 class="card-header">Price</h6>
+				<div class="list-group list-group-flush">
+					<li class="list-group-item"><br>
+						<select name="price" id="price">
+							<option value="low">Low to High</option>
+							<option value="high">High to Low</option>
+						</select>
+						<br><br>
+						<button id="priceFilterBtn" class="btn btn-info btn-sm mt-1">Sort</button>
+					</li>
+				</div>
+			</div>
+			<!-- Filter 1 -->
+			<div class="card mb-4">
+				<h6 class="card-header">Colors</h6>
+				<div class="list-group list-group-flush">
+					{% for color in colors %}
+					<li class="list-group-item">
+						<input class="filter-checkbox" data-filter="color" value="{{color.color__id}}" type="checkbox" />&nbsp;
+						<button class="btn" style="background-color: '{{color.color__code}}'; margin-top: -5px;"></button>
+						{{color.color__title}}
+					</li>
+					{% endfor %}
+				</div>
+			</div>
+			<!-- Filter 2 -->
+			<div class="card mb-4">
+				<h6 class="card-header">Categories</h6>
+				<div class="list-group list-group-flush">
+					{% for cat in cats %}
+					<li class="list-group-item">
+						<input class="filter-checkbox" data-filter="category" value="{{cat.category__id}}" type="checkbox" />&nbsp;
+						{{cat.category__title}}
+					</li>
+					{% endfor %}
+				</div>
+			</div>
+			<!-- Filter 3 -->
+			<div class="card mb-4">
+				<h6 class="card-header">Brands</h6>
+				<div class="list-group list-group-flush">
+					{% for brand in brands %}
+					<li class="list-group-item">
+						<input class="filter-checkbox" data-filter="brand" value="{{brand.brand__id}}" type="checkbox" />&nbsp;
+						{{brand.brand__title}}
+					</li>
+					{% endfor %}
+				</div>
+			</div>
+			<!-- Filter 4 -->
+			<div class="card mb-4">
+				<h6 class="card-header">Material</h6>
+				<div class="list-group list-group-flush">
+					{% for mat in mats %}
+					<li class="list-group-item">
+						<input class="filter-checkbox" data-filter="mat" value="{{mat.material__id}}" type="checkbox" />&nbsp;
+						
+						{{mat.material__title}}
+					</li>
+					{% endfor %}
+				</div>
+			</div>

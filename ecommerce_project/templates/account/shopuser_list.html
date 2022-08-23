@@ -1,0 +1,47 @@
+{% extends "account/basex.html" %}
+
+{% load i18n %}
+
+{% load crispy_forms_filters %}
+
+{% block head_title %}{% trans "SHOP USERS LIST" %}{% endblock %}
+
+{% block content %}
+<main class="container my-4">
+<br><br>
+<h1>{% trans "SHOP USERS LIST TO APPROVE OR REJECT" %}</h1>
+<br><br>
+
+{% if request.user.is_admin %}
+<div class="form-row align-items-center">
+<ul>
+    <!-- Iterate over object_list -->
+    {% for object in object_list %}
+    <!-- Display Objects -->
+    <div class="col-md-6">
+        <li>SHOP USER EMAIL : {{ object.email}}</li>
+      </div><br>
+
+      <div class="col-md-6">
+        <li>SHOP NAME       : {{ object.shop_name }}</li>
+      </div><br>
+
+      <div class="col-md-6">
+        <li>SHOP TYPE       : {{ object.shop_type }}</li>
+      </div><br>
+    
+    <br>
+    <p> To reject or approve this request please  <a href="{% url 'shopuser_details' object.id %}"><b>CLICK</b></a> here.  </p> 
+    <hr/>
+    <!-- If object_list is empty  -->
+    {% empty %}
+    <li>No objects yet.</li>
+    {% endfor %}
+</ul>
+
+</div>
+{% else %}
+<p> You are not authorized to see this page. Please login as admin.</p>
+{% endif %}
+</main>
+{% endblock %}

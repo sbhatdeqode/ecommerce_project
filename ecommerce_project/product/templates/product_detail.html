@@ -1,0 +1,92 @@
+{% extends 'basex.html' %}
+{% load static %}
+{% block content %}
+<main class="container my-4">
+	
+	<h3 class="my-4 border-bottom pb-1">{{product.title}}</h3>
+	
+		<!-- Images -->
+		<div class="col-md-4">
+			<img id="zoom_01" class= "card-img-top" data-zoom-image="/media/{{product.productattribute_set.first.image}}" src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{data.title}}">
+		</div>
+		<div class="col-md-10">
+			
+			<hr/>
+			<table class="table table-bordered">
+
+				<tr>
+					<th>Detail</th>
+					<td>
+						<b>{{product.detail}}</b>
+					</td>
+				</tr>
+				<tr>
+					<th>Color</th>
+					<td>
+						{{product.productattribute_set.first.color}}
+					</td>
+				</tr>
+				<tr>
+					<th>Material</th>
+					<td>
+                        {{product.productattribute_set.first.material}}	
+					</td>
+				</tr>
+				<tr>
+					<th>Price</th>
+					<th>Rs {{product.productattribute_set.first.price}}</span></th>
+				</tr>
+
+				<tr>
+					<th>Brand</th>
+					<td>{{product.brand.title}}</td>
+				</tr>
+				<tr>
+					<th>Category</th>
+					<td>{{product.category.title}}</td>
+				</tr>
+			</table>
+			<hr/>
+			
+		</div>
+	</div>
+	<hr />
+        
+	{% if request.user.user_type == '3' %}
+		<div class="col-md-8">
+            
+			<input type="hidden" class="product-id-{{product.id}}" value="{{product.id}}" />
+			<a href="{% url 'buy_now' %}?pid={{product.id}}"><button class="btn btn-sm btn-primary" >Buy Now</button> </a>
+            <button class="btn btn-sm btn-primary add-to-cart" data-index="{{product.id}}">Add To Cart<i class="fa fa-shopping-cart"></i></button>
+			<button class="btn btn-sm btn-danger add-to-wishlist" data-index="{{product.id}}">Add To Wishlist<i class="fa fa-heart"></i></button>
+		</div>
+	{% endif %}	
+	
+</main>
+
+
+{% endblock %}
+
+{% block js %}
+
+<!-- Image Zoom -->
+<script src="{% static 'jquery.ez-plus.js' %}"></script>
+<script type="text/javascript">
+    $('#zoom_01').ezPlus();
+</script>
+
+{% endblock js %}
+
+{% block extra_body %}
+
+<!-- Empty toast to show the message -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+	<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+	<div class="d-flex">
+		<div id="toast-body" class="toast-body"></div>
+		<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+	</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'shopuser_base.html' %}
+{% load static %}
+{% block content %}
+
+<main class="container my-4">
+    {% if request.user.user_type == '1' or  request.user.user_type == '2' %}
+	
+    <div class="row">
+		{% if request.user.user_type == '2' %}
+		<div class="col-md-3">
+			<h3 class="mb-4  border-bottom pb-1">
+				Order Details
+			</h3><br>
+			<div class="card mb-4  mr-4">
+				
+				<div class="list-group list-group-flush">
+					<li class="list-group-item"><br>
+						<a href="{% url 'shopuser_order_list' %}"><button  class="btn btn-info btn-md mt-1">Order List</button></a>
+					</li>
+					<li class="list-group-item"><br>
+						<a href="{% url 'shopuser_order_percentage' %}"><button  class="btn btn-info btn-md mt-1">Sales Report</button></a>
+					</li>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+		<div class="col-md-9">
+			<!-- Products -->
+			<h3 class="mb-4 border-bottom pb-1">
+				Your Products
+
+				{% if request.user.user_type == '2' %}
+
+				<span class="float-right">
+					<a href="{% url 'product_add' %}"> <button class="btn btn-sm btn-primary" data-index="{{product.id}}">Add Product</button> </a>
+				</span>
+
+                {% endif %}
+
+			</h3><br>
+			<div class="row" id="filteredProducts">
+			
+				{% for product in shopuser_products %}
+
+				<div class="col-lg-4 col-md-6 mb-4 product-box">
+
+					<div class="card shadow">
+
+						<a href="{% url 'product_detail'%}?p_id={{product.id}}"><img src="/media/{{product.productattribute_set.first.image}}" class="card-img-top" alt="{{product.title}}"></a>
+					  	<div class="card-body">
+					    	<h5 class="card-text"><a href="{% url 'product_detail'%}?p_id={{product.id}}">{{product.title}}</a></h5>
+					    	<h6>Rs. <span class="product-price-{{product.id}}">{{product.productattribute_set.first.price}}</span></h6>
+					  	</div>
+
+					  	<div class="card-footer">
+			
+				        	<input type="hidden" class="product-id-{{product.id}}" value="{{product.id}}" />
+
+							{% if request.user.user_type == '2' %}
+				
+							<a href="{% url 'product_update' %}?p_id={{product.id}}"> <button class="btn btn-sm btn-primary update-product" data-index="{{product.id}}">Update</button> </a>
+
+							{% endif %}
+
+							<button class="btn btn-sm btn-danger delete-product" data-index="{{product.id}}">Delete</i></button>
+							{% if product.published %}
+
+							<button class="btn btn-sm btn-primary publish-unpublish-product " data-index="{{product.id}}">Unpublish</button> 
+
+							{% else %}
+
+							<button class="btn btn-sm btn-primary publish-unpublish-product" data-index="{{product.id}}">Publish</button>     
+
+							{% endif %}
+											
+							<span class="float-right">
+							  		{{product.productattribute_set.first.get_rating_display}}/5
+							  		<i class="fa fa-star text-warning"></i>
+							</span>
+					  	</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+			
+		</div>
+	</div>
+    
+    {% else %}
+    <p> You are not authorized to see this page. Please login as shopuser.</p>
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block extra_body %}
+<!-- Empty toast to show the message -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+	<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+	<div class="d-flex">
+		<div id="toast-body" class="toast-body"></div>
+		<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+	</div>
+	</div>
+</div>
+{% endblock %}

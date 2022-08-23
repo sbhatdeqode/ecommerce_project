@@ -1,0 +1,69 @@
+{% extends "account/basex.html" %}
+
+{% load i18n %}
+
+{% load crispy_forms_filters %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+<main class="container my-4">
+<br><br>
+<h1>{% trans "Sign Up" %}</h1>
+
+<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">SIGN IN</a>.{% endblocktrans %}</p><br>
+<p>Shop User? Then please <a href="{% url 'account_shopuser_signup' %}">SIGN UP</a> here.</p>
+
+<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+  <input type="hidden" name="user_type" value="3" />
+  <input type="hidden" name="shop_type" value="NA" />
+  <input type="hidden" name="shop_name" value="NA" />
+  {% csrf_token %}
+  <div class="form-row align-items-center">
+     
+    <div class="col-md-6">
+      {{form.email|as_crispy_field}}
+      
+    </div><br>
+
+    
+
+    <div class="col-md-6">
+      {{form.username|as_crispy_field}}
+      
+    </div><br>
+
+    <div class="col-md-6">
+      {{form.dob|as_crispy_field}}
+      
+    </div><br>
+
+    <div class="col-md-6">
+      {{form.adress|as_crispy_field}}
+      
+    </div><br>
+
+    <div class="col-md-6">
+      {{form.gender|as_crispy_field}}
+      
+    </div><br>
+
+    <div class="col-md-6">
+      {{form.password1|as_crispy_field}}
+      
+    </div><br>
+
+    <div class="col-md-6">
+      {{form.password2|as_crispy_field}}
+      
+    </div><br>
+
+    
+    
+  </div>
+  
+  <button class = "btn btn-primary" type="submit">{% trans "Sign Up" %} &raquo;</button>
+</form>
+
+</main>
+{% endblock %}

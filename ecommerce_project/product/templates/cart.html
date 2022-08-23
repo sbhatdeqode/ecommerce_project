@@ -1,0 +1,68 @@
+{% extends 'basex.html' %}
+{% load static %}
+{% block content %}
+<main class="container my-4" id="cartList">
+	{% if request.user.user_type == '3' %}
+	{% if cart_products|length %}
+	<h3 class="my-4 border-bottom pb-1">Cart (Total Items : {{cart_products|length}})</h3>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Price</th>
+				<th>Remove</th>
+				<th>Buy Now</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for c in cart_products %}
+			<tr>
+				<td>
+					<img src="/media/{{c.product.productattribute_set.first.image}}" width="50" />
+					<p>{{c.product.title}}</p>
+				</td>
+				<td>
+		            Rs. {{c.product.productattribute_set.first.price}}
+					
+				</td>
+				<td>
+        
+					<button class="btn btn-sm btn-danger delete-item" data-item="{{c.product.id}}"><i class="fa fa-trash"></i></button>
+                </td>
+				<td>
+					<a href="{% url 'buy_now' %}?pid={{c.product.id}}"><button class="btn btn-sm btn-primary" >Buy Now</button> </a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="2"></td>
+				<th>Total</th>
+				<th>Rs. {{total_amount}}</th>
+			</tr>
+		</tfoot>
+	</table>
+	<a href="{% url 'place_order' %}"><button class="btn btn-sm btn-primary" >Place Order</button> </a>
+
+    {% else %}
+	<h4> You do not have any products in the cart</h4>
+    {% endif %}
+
+	{% else %}
+    <p> You are not authorized to see this page. Please login as customer.</p>
+    {% endif %}
+</main>
+{% endblock %}
+
+{% block extra_body %}
+   <!-- Empty toast to show the message -->
+	<div class="toast-container position-fixed top-0 end-0 p-3">
+		<div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="d-flex">
+			<div id="toast-body" class="toast-body"></div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		</div>
+	</div>
+{% endblock %}

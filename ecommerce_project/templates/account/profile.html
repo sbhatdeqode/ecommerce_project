@@ -1,0 +1,80 @@
+{% extends 'basex.html' %}
+{% block content %}
+<main class="container my-4">
+	<!-- Featured Products -->
+
+	<h3 class="my-4 border-bottom pb-1">Profile
+        {% if request.user.user_type == '2' and request.user == user %}
+        <span class="float-right">
+            <a href="{% url 'edit_profile_shop' request.user.id %} "> <button class="btn btn-sm btn-primary" >Edit Profile</button> </a>
+        </span>
+    
+        {% elif request.user == user %}
+
+        <span class="float-right">
+            <a href="{% url 'edit_profile' request.user.id %} "> <button class="btn btn-sm btn-primary" >Edit Profile</button> </a>
+        </span>
+
+        {% endif %}
+    </h3>
+	<table class="table table-bordered">
+
+		<tr>
+            <th>Id</th>
+            <td>
+                <b>{{user.id}}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Email</th>
+            <td>
+                <b>{{user.email}}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Adress</th>
+            <td>
+                <b>{{user.adress}}</b>
+            </td>
+        </tr>
+        
+        <tr>
+            <th>Date Of Birth</th>
+            <td>
+                <b>{{user.dob}}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Gender</th>
+            <td>
+                <b>{{user.gender}}</b>
+            </td>
+        </tr>
+        {% if user.user_type == '2' %}
+        <tr>
+            <th>Shop Name</th>
+            <td>
+                <b>{{user.shop_name}}</b>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Shop Type</th>
+            <td>
+                <b>{{user.shop_type}}</b>
+            </td>
+        </tr>
+
+        {% endif %}
+
+	</table><br><br>
+    {% if request.user == user %}
+    <a href="{% url 'account_email' %} "> <button class="btn btn-sm btn-primary" >Change Email</button> </a>
+    <a href="{% url 'account_change_password' %} "> <button class="btn btn-sm btn-primary" >Change Password</button> </a>
+    {% endif %}
+</main>
+{% endblock %}
+

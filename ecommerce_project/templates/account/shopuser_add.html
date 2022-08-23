@@ -1,0 +1,36 @@
+{% extends "account/basex.html" %}
+
+{% load i18n %}
+
+{% load crispy_forms_filters %}
+
+{% block head_title %}{% trans "ADD SHOP USER" %}{% endblock %}
+
+{% block content %}
+<main class="container my-4">
+{% if request.user.is_admin %}
+<br>
+<h3>{% trans "ADD SHOPUSER" %}</h3>
+<hr>
+<br>
+{{errors}}
+<table class="table table-bordered">
+  <form method="post" action="{% url 'add_shopuser' %}">
+    {% csrf_token %}
+      
+    {{form.as_table}}
+          
+    <tr>
+      <td colspan="2">
+        <input type="submit" value="Register" class="btn btn-primary" />
+      </td>
+    </tr>
+  </form>
+</table>
+
+{% else %}
+    <p> You are not authorized to see this page. Please login as admin.</p>
+{% endif %}
+
+</main>
+{% endblock %}
