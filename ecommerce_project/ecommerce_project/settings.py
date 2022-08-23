@@ -15,6 +15,10 @@ import os
 
 import environ
 
+import django_heroku
+import dj_database_url
+from decouple import config
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -71,6 +75,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'ecommerce_project.urls'
@@ -171,6 +177,8 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 AUTH_USER_MODEL = 'users.MyUser'
 
 # media
@@ -209,3 +217,5 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 RECIPIENT_ADDRESS = env('RECIPIENT_ADDRESS')
 
 """
+
+django_heroku.settings(locals())
