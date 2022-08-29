@@ -256,8 +256,6 @@ class AddShopuser(View):
             return render(request, self.template_name_success)
 
         errors = form.errors
-
-        form = ShopuserAddForm()
     
         return render(request, self.template_name, {
         'form': form, 'errors':errors

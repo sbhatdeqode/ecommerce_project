@@ -1,13 +1,12 @@
-FROM python:3
-
-ENV PYTHONUNBUFFERED 1
+FROM python:3.8-slim-buster
 
 WORKDIR /app
 
-ADD . /app
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
-COPY ./requirements.txt /app/requirements.txt
+COPY . .
 
-RUN pip install -r requirements.txt
+# CMD [ "python3", "manage.py", "runserver", "0.0.0.0:8000"]
 
-copy . /app
+CMD python manage.py runserver 0.0.0.0:$PORT

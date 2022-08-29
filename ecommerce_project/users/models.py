@@ -33,7 +33,7 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, user_type, password=None):
+    def create_superuser(self, email, user_type = '1', password = None):
 
         """
             create super user
